@@ -19,7 +19,7 @@ library(pscl)
 library(matrixStats)
 
 #Folder containing the dataset. CHANGE THE PATH!
-setwd("D:/Dropbox/papers/DR")
+setwd("C:/Users/Melly/Dropbox/papers/DR")
 rm(list = ls());
 
 
@@ -139,76 +139,39 @@ variance.w.8m <- apply(Fw.8m.b,1,FUN=function(x) IQR(x)/1.349)^2
 delta.c.8m    <- Fc.8m.b-Fc.8m;
 variance.c.8m <- apply(Fc.8m.b,1,FUN=function(x) IQR(x)/1.349)^2
 
-zs.j.8m<- apply(rbind(abs(delta.b.8m) /sqrt(variance.b.8m),abs(delta.w.8m) /sqrt(variance.w.8m),abs(delta.c.8m) /sqrt(variance.c.8m)),  2, max, na.rm = TRUE)  #max abs t-stat
+qlg <- 0.03
+qug <- 0.97
+
+select.w <- (Fw.8m.b>=qlg)*(rbind(0,Fw.8m.b[1:(nrow(Fw.8m.b)-1),])<qug)
+select.b <- (Fb.8m.b>=qlg)*(rbind(0,Fb.8m.b[1:(nrow(Fb.8m.b)-1),])<qug)
+select.c <- (Fc.8m.b>=qlg)*(rbind(0,Fc.8m.b[1:(nrow(Fc.8m.b)-1),])<qug)
+
+zs.j.8m<- apply(rbind(abs(delta.b.8m*select.b)/sqrt(variance.b.8m),abs(delta.w.8m*select.w)/sqrt(variance.w.8m),abs(delta.c.8m*select.c)/sqrt(variance.c.8m)),  2, max, na.rm = TRUE)  #max abs t-stat
 crt.j.8m<- quantile(zs.j.8m, 1-alpha)  #critical value
-zs.b.8m<- apply(abs(delta.b.8m) /sqrt(variance.b.8m),  2, max, na.rm = TRUE)  #max abs t-stat
-crt.b.8m<- quantile(zs.b.8m, 1-alpha)  #critical value
-zs.w.8m<- apply(abs(delta.w.8m) /sqrt(variance.w.8m),  2, max, na.rm = TRUE)  #max abs t-stat
-crt.w.8m<- quantile(zs.w.8m, 1-alpha)  #critical value
-zs.c.8m<- apply(abs(delta.c.8m) /sqrt(variance.c.8m),  2, max, na.rm = TRUE)  #max abs t-stat
-crt.c.8m<- quantile(zs.c.8m, 1-alpha)  #critical value
 
-# Algorithm 1
-ub.Fb.8m<-  sort(Fb.8m + crt.b.8m*sqrt(variance.b.8m))  
-lb.Fb.8m<-  sort(Fb.8m - crt.b.8m*sqrt(variance.b.8m))
-ub.Fb.8m<-  ifelse(ub.Fb.8m <= 1, ub.Fb.8m, 1);  #imposing support restriction
-lb.Fb.8m<-  ifelse(lb.Fb.8m >= 0, lb.Fb.8m, 0);  #imposing support restriction
-
-ub.Fw.8m<-  sort(Fw.8m + crt.w.8m*sqrt(variance.w.8m))
-lb.Fw.8m<-  sort(Fw.8m - crt.w.8m*sqrt(variance.w.8m))
-ub.Fw.8m<-  ifelse(ub.Fw.8m <= 1, ub.Fw.8m, 1);  #imposing support restriction
-lb.Fw.8m<-  ifelse(lb.Fw.8m >= 0, lb.Fw.8m, 0);  #imposing support restriction
-
-ub.Fc.8m<-  sort(Fc.8m + crt.c.8m*sqrt(variance.c.8m))
-lb.Fc.8m<-  sort(Fc.8m - crt.c.8m*sqrt(variance.c.8m))
-ub.Fc.8m<-  ifelse(ub.Fc.8m <= 1, ub.Fc.8m, 1);  #imposing support restriction
-lb.Fc.8m<-  ifelse(lb.Fc.8m >= 0, lb.Fc.8m, 0);  #imposing support restriction
-
-
-# Algorithm 2
 ub.Fbj.8m<-  sort(Fb.8m + crt.j.8m*sqrt(variance.b.8m))  
 lb.Fbj.8m<-  sort(Fb.8m - crt.j.8m*sqrt(variance.b.8m))
-ub.Fbj.8m<-  ifelse(ub.Fb.8m <= 1, ub.Fb.8m, 1);  #imposing support restriction
-lb.Fbj.8m<-  ifelse(lb.Fb.8m >= 0, lb.Fb.8m, 0);  #imposing support restriction
+ub.Fbj.8m<-  ifelse(ub.Fbj.8m <= 1, ub.Fbj.8m, 1);  #imposing support restriction
+lb.Fbj.8m<-  ifelse(lb.Fbj.8m >= 0, lb.Fbj.8m, 0);  #imposing support restriction
 
 ub.Fwj.8m<-  sort(Fw.8m + crt.j.8m*sqrt(variance.w.8m))
 lb.Fwj.8m<-  sort(Fw.8m - crt.j.8m*sqrt(variance.w.8m))
-ub.Fwj.8m<-  ifelse(ub.Fw.8m <= 1, ub.Fw.8m, 1);  #imposing support restriction
-lb.Fwj.8m<-  ifelse(lb.Fw.8m >= 0, lb.Fw.8m, 0);  #imposing support restriction
+ub.Fwj.8m<-  ifelse(ub.Fwj.8m <= 1, ub.Fwj.8m, 1);  #imposing support restriction
+lb.Fwj.8m<-  ifelse(lb.Fwj.8m >= 0, lb.Fwj.8m, 0);  #imposing support restriction
 
 ub.Fcj.8m<-  sort(Fc.8m + crt.j.8m*sqrt(variance.c.8m))
 lb.Fcj.8m<-  sort(Fc.8m - crt.j.8m*sqrt(variance.c.8m))
-ub.Fcj.8m<-  ifelse(ub.Fc.8m <= 1, ub.Fc.8m, 1);  #imposing support restriction
-lb.Fcj.8m<-  ifelse(lb.Fc.8m >= 0, lb.Fc.8m, 0);  #imposing support restriction
+ub.Fcj.8m<-  ifelse(ub.Fcj.8m <= 1, ub.Fcj.8m, 1);  #imposing support restriction
+lb.Fcj.8m<-  ifelse(lb.Fcj.8m >= 0, lb.Fcj.8m, 0);  #imposing support restriction
 
 ### Create step functions for distributions and quantiles;
 
-# Algorithm 1
 Fb.8m.func <- cdf(ys.8m,Fb.8m)
-ub.Fb.8m.func <- cdf(ys.8m,lb.Fb.8m)
-lb.Fb.8m.func <- cdf(ys.8m,ub.Fb.8m)
-
 Fw.8m.func <- cdf(ys.8m,Fw.8m)
-ub.Fw.8m.func <- cdf(ys.8m,lb.Fw.8m)
-lb.Fw.8m.func <- cdf(ys.8m,ub.Fw.8m)
-
 Fc.8m.func <- cdf(ys.8m,Fc.8m)
-ub.Fc.8m.func <- cdf(ys.8m,lb.Fc.8m)
-lb.Fc.8m.func <- cdf(ys.8m,ub.Fc.8m)
-
 Qb.8m.func   <- left.inv(ys.8m, Fb.8m);
-ub.Qb.8m.func  <- left.inv(ys.8m, lb.Fb.8m);
-lb.Qb.8m.func  <- left.inv(ys.8m, ub.Fb.8m);
-
 Qw.8m.func   <- left.inv(ys.8m, Fw.8m);
-ub.Qw.8m.func  <- left.inv(ys.8m, lb.Fw.8m);
-lb.Qw.8m.func  <- left.inv(ys.8m, ub.Fw.8m);
-
 Qc.8m.func   <- left.inv(ys.8m, Fc.8m);
-ub.Qc.8m.func  <- left.inv(ys.8m, lb.Fc.8m);
-lb.Qc.8m.func  <- left.inv(ys.8m, ub.Fc.8m);
-
-# Algorithm 2
 
 ub.Fbj.8m.func <- cdf(ys.8m,ub.Fbj.8m)
 lb.Fbj.8m.func <- cdf(ys.8m,lb.Fbj.8m)
@@ -224,13 +187,7 @@ lb.Qwj.8m.func  <- left.inv(ys.8m, ub.Fwj.8m);
 ub.Qcj.8m.func  <- left.inv(ys.8m, lb.Fcj.8m);
 lb.Qcj.8m.func  <- left.inv(ys.8m, ub.Fcj.8m);
 
-
-
 ### Graphs
-
-qlg <- max(min(ub.Fb.8m),min(ub.Fw.8m),min(ub.Fc.8m),0.03)
-qug <- min(max(lb.Fb.8m),max(lb.Fw.8m),max(lb.Fc.8m),0.97)
-
 
 # QFs
 pdf("Results/Test-Scores/figure5.pdf", pointsize=15,width=10.0,height=10.5);
@@ -244,9 +201,9 @@ Qc.8m.func  <- left.inv(c(-999,ys.8m,999), c(min(Fc.8m)-.Machine$double.eps,Fc.8
 plot(Qb.8m.func, xval=c(qlg,Fb.8m[Fb.8m>=qlg & Fb.8m<=qug],qug), xlim=c(0,1), verticals=FALSE, do.points=FALSE, col="dark blue", ylab="Test scores", xlab="", 
      ylim= c(-2.5,2.39), main="Quantile functions",
      sub=" ")
-for(i in 2:length(ys.8m)) if(ub.Fb.8m[i]>qlg & lb.Fb.8m[i-1]<qug) segments(max(qlg,lb.Fb.8m[i-1]),ys.8m[i]-0.05,min(qug,ub.Fb.8m[i]),ys.8m[i]-0.05,col="light blue", lty = 1,lwd=5) 
-for(i in 2:length(ys.8m)) if(ub.Fw.8m[i]>qlg & lb.Fw.8m[i-1]<qug) segments(max(qlg,lb.Fw.8m[i-1]),ys.8m[i]+0.05,min(qug,ub.Fw.8m[i]),ys.8m[i]+0.05,col="light green", lty = 1,lwd=5) 
-for(i in 2:length(ys.8m)) if(ub.Fc.8m[i]>qlg & lb.Fc.8m[i-1]<qug) segments(max(qlg,lb.Fc.8m[i-1]),ys.8m[i],min(qug,ub.Fc.8m[i]),ys.8m[i],col="grey", lty = 1,lwd=5) 
+for(i in 2:length(ys.8m)) if(ub.Fbj.8m[i]>qlg & lb.Fbj.8m[i-1]<qug) segments(max(qlg,lb.Fbj.8m[i-1]),ys.8m[i]-0.05,min(qug,ub.Fbj.8m[i]),ys.8m[i]-0.05,col="light blue", lty = 1,lwd=5, lend=1) 
+for(i in 2:length(ys.8m)) if(ub.Fwj.8m[i]>qlg & lb.Fwj.8m[i-1]<qug) segments(max(qlg,lb.Fwj.8m[i-1]),ys.8m[i]+0.05,min(qug,ub.Fwj.8m[i]),ys.8m[i]+0.05,col="light green", lty = 1,lwd=5, lend=1) 
+for(i in 2:length(ys.8m)) if(ub.Fcj.8m[i]>qlg & lb.Fcj.8m[i-1]<qug) segments(max(qlg,lb.Fcj.8m[i-1]),ys.8m[i],min(qug,ub.Fcj.8m[i]),ys.8m[i],col="grey", lty = 1,lwd=5, lend=1) 
 lines(Qb.8m.func, xval=c(qlg,Fb.8m[Fb.8m>=qlg & Fb.8m<=qug],qug), verticals=FALSE, do.points=FALSE, col="dark blue", lty = 1);
 lines(Qw.8m.func, xval=c(qlg,Fw.8m[Fw.8m>=qlg & Fw.8m<=qug],qug), verticals=FALSE, do.points=FALSE, col="dark green", lty = 1);
 lines(Qc.8m.func, xval=c(qlg,Fc.8m[Fc.8m>=qlg & Fc.8m<=qug],qug), verticals=FALSE, do.points=FALSE, col="black", lty = 1);
@@ -285,7 +242,7 @@ for(v in all.possible){
     temp_segments <- 1-accepted
     temp_segments[2:length(temp_segments)][temp_segments[1:(length(temp_segments)-1)]==1] <- 0
     temp_segments <- accepted*(cumsum(temp_segments)+accepted[1])
-    for(s in 1:max(temp_segments)) segments(quant[temp_segments==s][1],v,tail(quant[temp_segments==s],1),v,col="light blue", lty = 1,lwd=5)
+    for(s in 1:max(temp_segments)) segments(quant[temp_segments==s][1],v,tail(quant[temp_segments==s],1),v,col="light blue", lty = 1,lwd=5, lend=1)
   }
 }
 lines(QTE.func, xval=c(qlg,knots(QTE.func)[knots(QTE.func)>=qlg & knots(QTE.func)<=qug],qug), verticals=FALSE, do.points=FALSE, col="dark blue", lty = 1, lwd=1);
@@ -310,7 +267,7 @@ for(v in all.possible){
     temp_segments <- 1-accepted
     temp_segments[2:length(temp_segments)][temp_segments[1:(length(temp_segments)-1)]==1] <- 0
     temp_segments <- accepted*(cumsum(temp_segments)+accepted[1])
-    for(s in 1:max(temp_segments)) segments(quant[temp_segments==s][1],v,tail(quant[temp_segments==s],1),v,col="light blue", lty = 1,lwd=5)
+    for(s in 1:max(temp_segments)) segments(quant[temp_segments==s][1],v,tail(quant[temp_segments==s],1),v,col="light blue", lty = 1,lwd=5, lend=1)
   }
 }
 lines(QTE.func, xval=c(qlg,knots(QTE.func)[knots(QTE.func)>=qlg & knots(QTE.func)<=qug],qug), verticals=FALSE, do.points=FALSE, col="dark blue", lty = 1, lwd=1);
@@ -334,7 +291,7 @@ for(v in all.possible){
     temp_segments <- 1-accepted
     temp_segments[2:length(temp_segments)][temp_segments[1:(length(temp_segments)-1)]==1] <- 0
     temp_segments <- accepted*(cumsum(temp_segments)+accepted[1])
-    for(s in 1:max(temp_segments)) segments(quant[temp_segments==s][1],v,tail(quant[temp_segments==s],1),v,col="light blue", lty = 1,lwd=5)
+    for(s in 1:max(temp_segments)) segments(quant[temp_segments==s][1],v,tail(quant[temp_segments==s],1),v,col="light blue", lty = 1,lwd=5, lend=1)
   }
 }
 lines(QTE.func, xval=c(qlg,knots(QTE.func)[knots(QTE.func)>=qlg & knots(QTE.func)<=qug],qug), verticals=FALSE, do.points=FALSE, col="dark blue", lty = 1, lwd=1);
