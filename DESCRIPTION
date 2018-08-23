@@ -1,0 +1,35 @@
+Package: discreteQ
+Type: Package
+Title: Uniform inference on quantile and quantile effects for discrete outcomes
+Version: 0.1.0
+Authors@R: c(person("Blaise", "Melly", role = c("aut", "cre"),
+                     email = "blaise.melly@vwi.unibe"),
+              person("Victor", "Chernozhukov", role = "aut"),
+              person("Ivan", "Fernandez-Val", role = "aut",
+                     email = "ivanf@bu.edu "),
+              person("Kaspar", "Wüthrich", role = "aut",
+                     email = "kwuethrich@ucsd.edu "))
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: The package discreteQ implements the procedures developed and applied
+    in the research paper "Generic inferenc on quantile and quantile effect 
+    functions
+    for discrete outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val,
+    Blaise Melly and Kaspar Wüthrich. The command provides uniform bands for three 
+    different cases: (i) for the unconditional quantile function of an outcome 
+    variable, it
+    implements the algorithm defined in Appendix B of the paper;
+    (ii) for the quantile treatment effect of a binary treatment variable, it 
+    implements the algorithm used in the first application (Section 4.3);
+    (iii) for the decomposition of the difference between the quantile functions
+    of two groups, it implements the algorithm used in the second application
+    (Section 4.4). All procedures are valid for discrete, continuous and
+    mixed dicrete-continuous outcomes. See the paper for the precise definition 
+    of the estimators and their statistical properties.
+License: MIT
+URL: http://github.com/hadley/dplyr
+BugReports: http://github.com/hadley/dplyr/issues
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    stats
+RoxygenNote: 6.1.0
