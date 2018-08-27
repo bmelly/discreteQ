@@ -7,6 +7,8 @@
 \method{summary}{discreteQ}(object, which = NULL, taus = 0.05, ...)
 }
 \arguments{
+\item{object}{an object produced by \code{discreteQ}.}
+
 \item{which}{specifies the function for which the results are plotted. Possible values are (depending on the characteristics of the \code{discreteQ} object): "Q0", "Q1", "Qc", "QTE", observed", "composition", "unexplained". See `Details' below.}
 
 \item{taus}{defines the quantile indexes at which the results will be shown. There are two ways to specify this argument. (i) If taus is a scalar: the results are provided for a sequence of quantiles indexes in the range defined by q.range with an increment defined by taus. (ii) taus can also be a vector containing the requested quantile indexes. Default: taus=0.05.}

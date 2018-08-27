@@ -1,2 +1,5 @@
+^README\.Rmd$
+^replication$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.md$

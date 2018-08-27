@@ -17,7 +17,6 @@ dq_qte <- function(y, d, x=NULL, w=NULL, q.range=c(0.05,0.95), method="logit", b
   w1 <- w[d==1]
   ys <- sort(unique(y))
   ns <- length(ys)
-
   F.dr <- sapply(ys, uncond_cdfs_dr, y0=y0, y1=y1, x0=x0, x1=x1, w0=w0, w1=w1, x=x, w=w, method=method)
 
   F0 <- sort(F.dr[1,])
@@ -91,7 +90,7 @@ dq_summary.qte <- function(object, taus=0.05, which="QTE"){
 }
 
 #plot
-dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5){
+dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5, ...){
   if (is.null(which)) which <- "QTE"
   if (is.null(shift)) shift <- 0
   if (is.null(xlim)) xlim <- object$q.range
@@ -125,7 +124,7 @@ dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xla
   kx <- sort(unique(c(knots(temp), knots(templ), knots(tempu))))
   kx <- c(xlim[1],kx[kx>=xlim[1] & kx<=xlim[2]],xlim[2])
   if(is.null(ylim)) ylim <- c(min(templ(kx)), max(tempu(kx)))+shift
-  if(add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main)
+  if(add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main, ...)
   for(i in 2:length(kx)) for(j in allv[allv>=templ(kx[i]) & allv<=tempu(kx[i])]) segments(kx[i-1],j+shift,kx[i],j+shift,col=col.b, lty = lty.b, lwd=lwd.b, lend=1)
   for(i in 2:length(kx)) segments(kx[i-1],temp(kx[i])+shift,kx[i],temp(kx[i])+shift,col=col.l, lty = lty.l, lwd=lwd.l)
 }
@@ -133,8 +132,8 @@ dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xla
 uncond_cdfs_dr <- function(ys, y0, y1, x0, x1, w0, w1, x, w, method){
   if (method!="sample") {
     if (method=="logit" | method=="probit" | method=="cauchit" | method=="cloglog") {
-      fit0  <- glm.fit(x0, (y0<=ys), weights=w0, family = binomial(link = method))$coef
-      fit1  <- glm.fit(x1, (y1<=ys), weights=w1, family = binomial(link = method))$coef
+      suppressWarnings(fit0  <- glm.fit(x0, (y0<=ys), weights=w0, family = binomial(link = method))$coef)
+      suppressWarnings(fit1  <- glm.fit(x1, (y1<=ys), weights=w1, family = binomial(link = method))$coef)
     } else if (method=="lpm") {
       fit0  <- lm.wfit(x0, (y0<=ys), w=w0)$coef
       fit1  <- lm.wfit(x1, (y1<=ys), w=w1)$coef

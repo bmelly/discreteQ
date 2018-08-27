@@ -39,7 +39,7 @@ dq_summary.univariate <- function(object, taus=0.05){
 }
 
 #plot
-dq_plot.univariate <- function(object, xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5){
+dq_plot.univariate <- function(object, xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5, ...){
   if(is.null(shift)) shift <- 0
   if(is.null(xlim)){
     xlim <- object$q.range
@@ -52,7 +52,7 @@ dq_plot.univariate <- function(object, xlim=NULL, ylim=NULL, main=NULL, xlab=NUL
   if(is.null(ylim)) ylim <- c(object$lb.Q(xlim[1]), object$ub.Q(xlim[2]))+shift
   kx <- sort(unique(c(knots(object$Q), knots(object$lb.Q), knots(object$ub.Q))))
   kx <- c(xlim[1],kx[kx>=xlim[1] & kx<=xlim[2]],xlim[2])
-  if(add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main)
+  if(add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main, ...)
   for(i in 2:length(kx)) for(j in object$ys[object$ys>=object$lb.Q(kx[i]) & object$ys<=object$ub.Q(kx[i])]) segments(kx[i-1],j+shift,kx[i],j+shift,col=col.b, lty = lty.b, lwd=lwd.b, lend=1)
   for(i in 2:length(kx)) segments(kx[i-1],object$Q(kx[i])+shift,kx[i],object$Q(kx[i])+shift,col=col.l, lty = lty.l, lwd=lwd.l)
 }

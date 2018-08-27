@@ -57,6 +57,10 @@
 #' plot(results3)
 #' plot(results3, which="composition")
 
+#' @importFrom graphics legend par plot segments
+#' @importFrom stats IQR binomial glm.fit knots lm.wfit quantile rexp stepfun
+#'   weighted.mean
+
 #' @export
 discreteQ <- function(y, d=NULL, x=NULL, w=NULL, decomposition=FALSE, q.range=c(0.05,0.95),
                       method="logit", bsrep=200, alpha=0.05){
@@ -74,34 +78,4 @@ discreteQ <- function(y, d=NULL, x=NULL, w=NULL, decomposition=FALSE, q.range=c(
   }
   class(fit) <- "discreteQ"
   fit
-}
-
-#' @export
-summary.discreteQ <- function(object, which=NULL, taus=0.05){
-  if (object$model=="decomposition") {
-    if (is.null(which)) which <- "unexplained"
-    dq_summary.decomposition(object, taus, which)
-  } else if (object$model=="qte"){
-    if (is.null(which)) which <- "QTE"
-    dq_summary.qte(object, taus, which)
-  } else if (object$model=="univariate"){
-    dq_summary.univariate(object, taus)
-  }
-}
-
-#' @export
-plot.discreteQ <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL,
-                           xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue",
-                           col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1,
-                           lwd.b=5){
-  if (object$model=="decomposition") {
-    dq_plot.decomposition(object, which, xlim, ylim, main, xlab, ylab, add, col.l,
-                       col.b, shift, lty.l, lwd.l, lty.b, lwd.b)
-  } else if (object$model=="qte"){
-    dq_plot.qte(object, which, xlim, ylim, main, xlab, ylab, add, col.l, col.b, shift,
-             lty.l, lwd.l, lty.b, lwd.b)
-  } else if (object$model=="univariate"){
-    dq_plot.univariate(object, xlim, ylim, main, xlab, ylab, add, col.l, col.b, shift,
-                    lty.l, lwd.l, lty.b, lwd.b)
-  }
 }

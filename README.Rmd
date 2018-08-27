@@ -70,7 +70,7 @@ plot(results1)
 ```
 
 The point estimates are shown in dark blue and the uniform bands in light blue. It is also possible to obtain a tabular summary of the results using summary:
-```{r example 4}
+```{r example4}
 summary(results1)
 ```
 By default the increment between quantile indexes is 0.05 but this can be modified.
@@ -82,7 +82,7 @@ If a treatment variable is provided in the argument d but the argument decomposi
 If regressors are provided in the argument x, then the conditional distribution function of the outcome given the covariates is estimated separately in the control and treated group using distribution regression. In a second step, discreteQ estimates the counterfactual distributions that we would observe if all observations were not treated or treated by integrating the estimated conditional distributions over the distribution of the regressors in the whole sample. The estimated quantile treatment effect function has a causal interpretation if the treatment is randomized conditionally on the control variable (or can be treated as if it were).
 
 Let's consider a second artifical example:
-```{r example 5}
+```{r example5}
 set.seed(1234)
 treatment <- c(rep(0,1000), rep(1,1000))
 reg <- rbinom(2000, 1, 0.4+treatment*0.2)
@@ -90,21 +90,21 @@ outcome <- rpois(2000, lambda = 2+4*reg)
 ```
 
 We have generated 1000 control observations and 1000 treated observations. The binary regressor reg has a higher mean in treated group, which implies that the outcome has also a higher mean in the treated group. In fact, we see that the unconditional distribution of the outcome in the treated group is stochastically dominated by the unconditional distribution of the outcome in the control group:
-```{r example 6}
+```{r example6}
 results2 <- discreteQ(outcome, treatment)
 plot(results2, main="Difference between the unconditional quantile functions")
 ```
 We see that the quantile tdifferences are uniformly weakly positive. In addition, the uniform bands exclude 0 at many quantile indexes. Since these are uniform bands that cover the whole functions with probability 1-alpha (which is 0.95 by default), we can reject the null hypothesis that treated and control unconditional distribution are identical.
 
 However, given the regressors, there are no difference between the control and treated outcomes. The difference between the unconditional quantile functions should, therefore, not be interpreted as a causal effect of the treatment. This is why we now estimate the quantile treatment effect by including the regressors in the estimation:
-```{r example 7}
+```{r example7}
 results3 <- discreteQ(outcome, treatment, cbind(1, reg))
 plot(results3)
 ```
 The bands include now 0 at all quantile indexes such that we can no longer reject the null hypothesis that the treatment has no effect at all.
 
 The plot function can also be used to visualize the estimated counterfactual distributions that we would observed if nobody was treated (Q0) and that we would observe if everybody was treated (Q1):
-```{r example 8}
+```{r example8}
 plot(results3, which="Q0")
 plot(results3, which="Q1", add=TRUE, shift=0.2, col.l="dark green", col.b="light green")
 ```
@@ -115,7 +115,7 @@ With the argument add=TRUE it is possible to add the results for the function Q1
 Finally, discreteQ can be used to decompose the difference between the observed quantile function of the outcome for the treated group and the observed quantile function of the outcome for the control group. In order to perform this decomposition discreteQ estimates the counterfactual distribution that would prevail for control observations had they had the distribution of regressors of treated observations. In other words, we integrate the conditional distribution of the control outcome given the regressors over the unconditional distribution of the regressors for the treated observations. Distribution regression is used to estimated the conditional distribution and the link function can be specified with the argument method.
 
 We can illustrate this third type of applications with the same data. We simply add the argument decomposition=TRUE when we call discreteQ:
-```{r example 9}
+```{r example9}
 results4 <- discreteQ(outcome, treatment, cbind(1, reg), decomposition=TRUE)
 plot(results4)
 ```

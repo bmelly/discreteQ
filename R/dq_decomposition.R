@@ -13,7 +13,6 @@ dq_decomposition <- function(y, x, g, w=NULL, q.range=c(0.05,0.95), method="logi
   w1 <- w[g==1]
   ys <- sort(unique(y))
   ns <- length(ys)
-
   F.dr <- sapply(ys, decomp_cdfs_dr, y0=y0, y1=y1, x0=x0, x1=x1, w0=w0, w1=w1, method=method)
   F0 <- sort(F.dr[1,])
   F1 <- sort(F.dr[2,])
@@ -118,7 +117,7 @@ dq_summary.decomposition <- function(object, taus=0.05, which="unexplained"){
 }
 
 #plot
-dq_plot.decomposition <- function(object, which="decomposition", xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5){
+dq_plot.decomposition <- function(object, which="decomposition", xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5, ...){
   if (is.null(which)) which <- "decomposition"
   if (is.null(xlim)) xlim <- object$q.range
   else if (max(xlim)>object$q.range[2] | min(xlim)<object$q.range[1]) stop("The quantiles specified by the argument `xlim' must be within the range defined when calling cb.univariate().")
@@ -141,31 +140,31 @@ dq_plot.decomposition <- function(object, which="decomposition", xlim=NULL, ylim
       col.b <- c(col.b, "light green", "grey")
     }
     if(is.null(main)){
-      main <- c("Quantile functions", "Observed difference (QF1-QF0)", "Composition effect (QFc-QF0)", "Unexplained difference (QF1-QFc)")
+      main <- c("Quantile functions", "Observed difference (Q1-Q0)", "Composition effect (Qc-Q0)", "Unexplained difference (Q1-Qc)")
     } else if(length(main)!=4){
       stop("For the decomposition plots, the argument main must be a vector of length 4.")
     }
-    plot_decomposition_internal(object, "Q0", xlim, ylim1, main[1], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift=0, lty.l, lwd.l, lty.b, lwd.b)
+    plot_decomposition_internal(object, "Q0", xlim, ylim1, main[1], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift=0, lty.l, lwd.l, lty.b, lwd.b, ...)
     plot_decomposition_internal(object, "Qc", xlim, ylim1, NULL, xlab, ylab, add=TRUE, col.l[2], col.b[2], shift=shift1, lty.l, lwd.l, lty.b, lwd.b)
     plot_decomposition_internal(object, "Q1", xlim, ylim1, NULL, xlab, ylab, add=TRUE, col.l[3], col.b[3], shift=-shift1, lty.l, lwd.l, lty.b, lwd.b)
     legend("topleft", legend=c("Q0","Qc","Q1"), col=col.b, lty=lty.l, lwd=lwd.b, bty="n")
-    plot_decomposition_internal(object, "observed", xlim, ylim, main[2], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift2, lty.l, lwd.l, lty.b, lwd.b)
-    plot_decomposition_internal(object, "composition", xlim, ylim, main[3], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift2, lty.l, lwd.l, lty.b, lwd.b)
-    plot_decomposition_internal(object, "unexplained", xlim, ylim, main[4], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift2, lty.l, lwd.l, lty.b, lwd.b)
+    plot_decomposition_internal(object, "observed", xlim, ylim, main[2], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift2, lty.l, lwd.l, lty.b, lwd.b, ...)
+    plot_decomposition_internal(object, "composition", xlim, ylim, main[3], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift2, lty.l, lwd.l, lty.b, lwd.b, ...)
+    plot_decomposition_internal(object, "unexplained", xlim, ylim, main[4], xlab, ylab, add=FALSE, col.l[1], col.b[1], shift2, lty.l, lwd.l, lty.b, lwd.b, ...)
   } else if(which=="observed" | which=="composition" | which=="unexplained" | which=="Q0" | which=="Q1" | which=="Qc"){
     if(is.null(shift)) shift <- 0
-    plot_decomposition_internal(object, which, xlim, ylim, main, xlab, ylab, add, col.l, col.b, shift, lty.l, lwd.l, lty.b, lwd.b)
+    plot_decomposition_internal(object, which, xlim, ylim, main, xlab, ylab, add, col.l, col.b, shift, lty.l, lwd.l, lty.b, lwd.b, ...)
   }
 }
 
-plot_decomposition_internal <- function(object, which="QTE", xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=0, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5){
+plot_decomposition_internal <- function(object, which="QTE", xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=0, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5, ...){
   if(which=="observed"){
     temp <- object$observed
     templ <- object$lb.observed
     tempu <- object$ub.observed
     allv <- expand.grid(object$ys, object$ys)
     allv <- sort(unique(allv[,1]-allv[,2]))
-    if(is.null(main)) main <- "Observed difference (QF1-QF0)"
+    if(is.null(main)) main <- "Observed difference (Q1-Q0)"
     if(is.null(ylab)) ylab <- "Quantile difference"
   } else if(which=="unexplained"){
     temp <- object$unexplained
@@ -173,7 +172,7 @@ plot_decomposition_internal <- function(object, which="QTE", xlim=NULL, ylim=NUL
     tempu <- object$ub.unexplained
     allv <- expand.grid(object$ys, object$ys)
     allv <- sort(unique(allv[,1]-allv[,2]))
-    if(is.null(main)) main <- "Unexplained difference (QF1-QFc)"
+    if(is.null(main)) main <- "Unexplained difference (Q1-Qc)"
     if(is.null(ylab)) ylab <- "Quantile difference"
   } else if(which=="composition"){
     temp <- object$composition
@@ -181,7 +180,7 @@ plot_decomposition_internal <- function(object, which="QTE", xlim=NULL, ylim=NUL
     tempu <- object$ub.composition
     allv <- expand.grid(object$ys, object$ys)
     allv <- sort(unique(allv[,1]-allv[,2]))
-    if(is.null(main)) main <- "Composition effect (QFc-QF0)"
+    if(is.null(main)) main <- "Composition effect (Qc-Q0)"
     if(is.null(ylab)) ylab <- "Quantile difference"
   } else if(which=="Q0"){
     temp <- object$Q0
@@ -208,29 +207,24 @@ plot_decomposition_internal <- function(object, which="QTE", xlim=NULL, ylim=NUL
   kx <- sort(unique(c(knots(temp), knots(templ), knots(tempu))))
   kx <- c(xlim[1],kx[kx>=xlim[1] & kx<=xlim[2]],xlim[2])
   if(is.null(ylim)) ylim <- c(min(templ(kx)), max(tempu(kx)))+shift
-  if(add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main)
+  if(add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main, ...)
   for(i in 2:length(kx)) for(j in allv[allv>=templ(kx[i]) & allv<=tempu(kx[i])]) segments(kx[i-1],j+shift,kx[i],j+shift,col=col.b, lty = lty.b, lwd=lwd.b, lend=1)
   for(i in 2:length(kx)) segments(kx[i-1],temp(kx[i])+shift,kx[i],temp(kx[i])+shift,col=col.l, lty = lty.l, lwd=lwd.l)
 }
 
 decomp_cdfs_dr <- function(ys, y0, y1, x0, x1, w0, w1, method){
-  if(method=="logit" | method=="probit" | method=="cauchit" | method=="cloglog"){
-    fit0  <- glm.fit(x0, (y0<=ys), weights=w0, family = binomial(link = method))$coef
-    fit1  <- glm.fit(x1, (y1<=ys), weights=w1, family = binomial(link = method))$coef
-  } else if(method=="lpm"){
+  if (method=="logit" | method=="probit" | method=="cauchit" | method=="cloglog") {
+    options(warn=-1)
+    suppressWarnings(fit0  <- glm.fit(x0, (y0<=ys), weights=w0, family = binomial(link = method))$coef)
+  } else if (method=="lpm") {
     fit0  <- lm.wfit(x0, (y0<=ys), w=w0)$coef
-    fit1  <- lm.wfit(x1, (y1<=ys), w=w1)$coef
-  } else stop("The selected method has not yet been implemented.")
-  F0 <- x0%*%fit0
-  F1 <- x1%*%fit1
+  } else stop("The selected method has not (yet?) been implemented.")
   Fc <- x1%*%fit0
-  if(method=="logit" | method=="probit" | method=="cauchit" | method=="cloglog"){
-    F0 <- binomial(method)$linkinv(F0)
-    F1 <- binomial(method)$linkinv(F1)
+  if (method=="logit" | method=="probit" | method=="cauchit" | method=="cloglog") {
     Fc <- binomial(method)$linkinv(Fc)
   }
-  F0  <- weighted.mean(F0, w0)
-  F1  <- weighted.mean(F1, w1)
-  Fc  <- weighted.mean(Fc, w1)
+  F0 <- weighted.mean((y0<=ys), w=w0)
+  F1 <- weighted.mean((y1<=ys), w=w1)
+  Fc <- weighted.mean(Fc, w1)
   c(F0,F1,Fc)
 }

@@ -1,6 +1,6 @@
 Package: discreteQ
 Type: Package
-Title: Uniform inference on quantile and quantile effects for discrete outcomes
+Title: Inference on quantile and quantile effects for discrete outcomes
 Version: 0.1.0
 Authors@R: c(person("Blaise", "Melly", role = c("aut", "cre"),
                      email = "blaise.melly@vwi.unibe"),
@@ -9,7 +9,7 @@ Authors@R: c(person("Blaise", "Melly", role = c("aut", "cre"),
                      email = "ivanf@bu.edu "),
               person("Kaspar", "Wüthrich", role = "aut",
                      email = "kwuethrich@ucsd.edu "))
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Blaise Melly <blaise.melly@vwi.unibe.ch>
 Description: The package discreteQ implements the procedures developed and applied
     in the research paper "Generic inferenc on quantile and quantile effect 
     functions
@@ -25,11 +25,15 @@ Description: The package discreteQ implements the procedures developed and appli
     (Section 4.4). All procedures are valid for discrete, continuous and
     mixed dicrete-continuous outcomes. See the paper for the precise definition 
     of the estimators and their statistical properties.
-License: MIT
-URL: http://github.com/hadley/dplyr
-BugReports: http://github.com/hadley/dplyr/issues
+License: MIT + file LICENSE
+URL: http://github.com/bmelly/discreteQ
+BugReports: http://github.com/bmelly/discreteQ/issues
 Encoding: UTF-8
 LazyData: true
 Imports: 
     stats
 RoxygenNote: 6.1.0
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
