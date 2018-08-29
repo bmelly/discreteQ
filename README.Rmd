@@ -18,8 +18,8 @@ This repository contains two different parts:
 
 1) In the folder repository you can find the datasets and the R codes that
 generated all the results in the paper in the paper "Generic Inference on
-Quantile and Quantile Effect Functions for Discrete Outcomes" written by V.
-Chernozhukov, I. Fernandez-Val, B. Melly, and K. Wuethrich. This paper is
+Quantile and Quantile Effect Functions for Discrete Outcomes" written by Victor
+Chernozhukov, Ivan Fernandez-Val, Blaise Melly, and Kaspar Wuethrich. This paper is
 available at https://arxiv.org/abs/1608.05142. The first empirical example uses
 data from the Oregon health experiment. The data are available at
 http://www.nber.org/oregon/4.data.html. The second empirical example is a

@@ -6,7 +6,7 @@
 \usage{
 discreteQ(y, d = NULL, x = NULL, w = NULL, decomposition = FALSE,
   q.range = c(0.05, 0.95), method = "logit", bsrep = 200,
-  alpha = 0.05)
+  alpha = 0.05, ys = NULL)
 }
 \arguments{
 \item{y}{outcome (vector).}
@@ -26,6 +26,8 @@ discreteQ(y, d = NULL, x = NULL, w = NULL, decomposition = FALSE,
 \item{bsrep}{number of bootstrap replications. Default: 200.}
 
 \item{alpha}{confidence level. Default: 0.05.}
+
+\item{ys}{specifies the thresholds at which the cumulative distribution function will be estimated. This argument can be specified either as a scalar that will be interpreted as the number of thresholds or as a vector that will contain the values of the thresholds. By default, the cdf is estimated at all distinct observed values of the outcome in the sample if there are less than 100 unique values and at 99 different values if there are more than 100 distinct values.}
 }
 \value{
 A list of step functions (of class \code{stepfun}). For each quantile or quantile effect function of interest (1 in case (i), 3 in case (ii) and 6 in case (iii)), three step functions are returned: one for the point estimates, one for the lower bound of the confidence band and one for the upper bound of the confidence band. There are methods available for plotting ("\code{plot}", see ???) and summarizing ("\code{summary}", see ???) "\code{discreteQ}" objects. We recommend using them to analyze the results.
@@ -50,7 +52,7 @@ decomposition of their difference into an explained (by the regressors
 \code{x}) and unexplained component.
 
 The output of the function is a list of step functions. We recommend to use
-the \code{plot} and \code{summary} functions.
+the \code{\link{plot.discreteQ}} and \code{\link{summary.discreteQ}} functions.
 }
 \examples{
 set.seed(1234)

@@ -1,5 +1,5 @@
 #Definition of the main function
-dq_qte <- function(y, d, x=NULL, w=NULL, q.range=c(0.05,0.95), method="logit", bsrep=200, alpha=0.05){
+dq_qte <- function(y, d, x=NULL, w=NULL, q.range=c(0.05,0.95), method="logit", bsrep=200, alpha=0.05, ys){
   y0 <- y[d==0]
   y1 <- y[d==1]
   n0 <- length(y0)
@@ -15,24 +15,34 @@ dq_qte <- function(y, d, x=NULL, w=NULL, q.range=c(0.05,0.95), method="logit", b
   }
   w0 <- w[d==0]
   w1 <- w[d==1]
-  ys <- sort(unique(y))
-  ns <- length(ys)
-  F.dr <- sapply(ys, uncond_cdfs_dr, y0=y0, y1=y1, x0=x0, x1=x1, w0=w0, w1=w1, x=x, w=w, method=method)
+  yu0 <- unique(y[d==0])
+  yu1 <- unique(y[d==1])
+  if (is.null(ys)){
+    if(length(yu0)<100) ys0 <- sort(yu0) else ys0 <- sort(unique(quantile(y[d==0], seq(1/100,99/100,1/100), type=1)))
+    if(length(yu1)<100) ys1 <- sort(yu1) else ys1 <- sort(unique(quantile(y[d==1], seq(1/100,99/100,1/100), type=1)))
+  } else if (length(ys)==1){
+    ys0 <- sort(unique(quantile(y[d==0], seq(1/(ys+1),ys/(ys+1),1/ys), type=1)))
+    ys1 <- sort(unique(quantile(y[d==1], seq(1/(ys+1),ys/(ys+1),1/ys), type=1)))
+  } else{
+    ys0 <- unique(sort(ys[ys %in% yu0]))
+    ys1 <- unique(sort(ys[ys %in% yu1]))
+  }
+  max0 <- max(ys0)
+  max1 <- max(ys1)
 
-  F0 <- sort(F.dr[1,])
-  F1 <- sort(F.dr[2,])
+  F0 <- sort(sapply(ys0, uncond_cdfs_dr, ye=y0, xe=x0, we=w0, x=x, w=w, method=method))
+  F1 <- sort(sapply(ys1, uncond_cdfs_dr, ye=y1, xe=x1, we=w1, x=x, w=w, method=method))
 
-  Q0.func  <-  left.inv(ys, F0)
-  Q1.func  <-  left.inv(ys, F1)
+  Q0.func  <-  stats::stepfun(F0, c(ys0, max0), right=TRUE)
+  Q1.func  <-  stats::stepfun(F1, c(ys1, max1), right=TRUE)
   if(!sq) x <- as.matrix(rbind(x0,x1))
-  w <- c(w0,w1)
-  F0.b  <-  F1.b  <-  matrix(NA, length(ys), bsrep)
+  F0.b  <-  matrix(NA, length(ys0), bsrep)
+  F1.b  <-  matrix(NA, length(ys1), bsrep)
   for(r in 1:bsrep){
     bw0 <- rexp(n0)*w0
     bw1 <- rexp(n1)*w1
-    F.dr <- sapply(ys, uncond_cdfs_dr, y0=y0, y1=y1, x0=x0, x1=x1, w0=bw0, w1=bw1, x=x, w=w, method=method)
-    F0.b[,r] <- F.dr[1,]
-    F1.b[,r] <- F.dr[2,]
+    F0.b[,r] <- sapply(ys0, uncond_cdfs_dr, ye=y0, xe=x0, we=bw0, x=x, w=c(bw0, bw1), method=method)
+    F1.b[,r] <- sapply(ys1, uncond_cdfs_dr, ye=y1, xe=x1, we=bw1, x=x, w=c(bw0, bw1), method=method)
   }
 
   delta.0 <- F0.b - F0
@@ -54,19 +64,19 @@ dq_qte <- function(y, d, x=NULL, w=NULL, q.range=c(0.05,0.95), method="logit", b
   ub.F1j.i <- ifelse(ub.F1j.i <= 1, ub.F1j.i, 1)
   lb.F1j.i <- ifelse(lb.F1j.i >= 0, lb.F1j.i, 0)
 
-  ub.Q0j.func <- left.inv(ys, lb.F0j.i)
-  lb.Q0j.func <- left.inv(ys, ub.F0j.i)
-  ub.Q1j.func <- left.inv(ys, lb.F1j.i)
-  lb.Q1j.func <- left.inv(ys, ub.F1j.i)
+  ub.Q0j.func <- stats::stepfun(lb.F0j.i, c(ys0, max0), right=FALSE)
+  lb.Q0j.func <- stats::stepfun(ub.F0j.i, c(ys0, max0), right=TRUE)
+  ub.Q1j.func <- stats::stepfun(lb.F1j.i, c(ys1, max1), right=FALSE)
+  lb.Q1j.func <- stats::stepfun(ub.F1j.i, c(ys1, max1), right=TRUE)
 
   knots.new <- sort(unique(c(knots(Q1.func), knots(Q0.func))))
-  QTE.func <- stats::stepfun(knots.new, c(Q1.func(knots.new) - Q0.func(knots.new), max(ys)), right=TRUE)
+  QTE.func <- stats::stepfun(knots.new, c(Q1.func(knots.new-.Machine$double.eps) - Q0.func(knots.new-.Machine$double.eps), max1-max0), right=TRUE)
   knots.new <- sort(unique(c(knots(lb.Q1j.func), knots(ub.Q0j.func))))
-  lb.QTE.func <- stats::stepfun(knots.new, c(lb.Q1j.func(knots.new) - ub.Q0j.func(knots.new), max(ys)), right=TRUE)
+  lb.QTE.func <- stats::stepfun(knots.new, c(lb.Q1j.func(knots.new-.Machine$double.eps) - ub.Q0j.func(knots.new-.Machine$double.eps), max1 - max0), right=TRUE)
   knots.new <- sort(unique(c(knots(ub.Q1j.func), knots(lb.Q0j.func))))
-  ub.QTE.func <- stats::stepfun(knots.new, c(ub.Q1j.func(knots.new) - lb.Q0j.func(knots.new), max(ys)), right=TRUE)
+  ub.QTE.func <- stats::stepfun(knots.new, c(ub.Q1j.func(knots.new-.Machine$double.eps) - lb.Q0j.func(knots.new-.Machine$double.eps), max1 - max0), right=TRUE)
 
-  list(QTE=QTE.func, lb.QTE=lb.QTE.func, ub.QTE=ub.QTE.func, Q0=Q0.func, lb.Q0=lb.Q0j.func, ub.Q0=ub.Q0j.func, Q1=Q1.func, lb.Q1=lb.Q1j.func, ub.Q1=ub.Q1j.func, q.range=q.range, ys=ys)
+  list(QTE=QTE.func, lb.QTE=lb.QTE.func, ub.QTE=ub.QTE.func, Q0=Q0.func, lb.Q0=lb.Q0j.func, ub.Q0=ub.Q0j.func, Q1=Q1.func, lb.Q1=lb.Q1j.func, ub.Q1=ub.Q1j.func, q.range=q.range, ys0=ys0, ys1=ys1)
 }
 
 #summary
@@ -90,17 +100,20 @@ dq_summary.qte <- function(object, taus=0.05, which="QTE"){
 }
 
 #plot
-dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5, ...){
+dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xlab=NULL, ylab=NULL, add=FALSE, col.l="dark blue", col.b="light blue", shift=NULL, lty.l=1, lwd.l=1, lty.b=1, lwd.b=5, support, ...){
   if (is.null(which)) which <- "QTE"
   if (is.null(shift)) shift <- 0
-  if (is.null(xlim)) xlim <- object$q.range
-  else if (max(xlim)>object$q.range[2] | min(xlim)<object$q.range[1]) stop("The quantiles specified by the argument `xlim' must be within the range defined when calling cb.univariate().")
+  if (is.null(xlim)){
+    xlim <- object$q.range
+  } else if (max(xlim)>object$q.range[2] | min(xlim)<object$q.range[1]){
+    stop("The quantiles specified by the argument `xlim' must be within the range defined when calling cb.univariate().")
+  }
   if (is.null(xlab)) xlab <- "Probability"
   if (which=="QTE"){
     temp <- object$QTE
     templ <- object$lb.QTE
     tempu <- object$ub.QTE
-    allv <- expand.grid(object$ys, object$ys)
+    allv <- expand.grid(object$ys1, object$ys0)
     allv <- sort(unique(allv[,1]-allv[,2]))
     if(is.null(main)) main <- "QTE and uniform bands"
     if(is.null(ylab)) ylab <- "Quantile treatment effect"
@@ -109,7 +122,7 @@ dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xla
     temp <- object$Q0
     templ <- object$lb.Q0
     tempu <- object$ub.Q0
-    allv <- object$ys
+    allv <- object$ys0
     if(is.null(main)) main <- "QF for the control outcome and uniform bands"
     if(is.null(ylab)) ylab <- "Quantile function"
   }
@@ -117,38 +130,40 @@ dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xla
     temp <- object$Q1
     templ <- object$lb.Q1
     tempu <- object$ub.Q1
-    allv <- object$ys
+    allv <- object$ys1
     if(is.null(main)) main <- "QF for the treated outcome and uniform bands"
     if(is.null(ylab)) ylab <- "Quantile function"
   }
-  kx <- sort(unique(c(knots(temp), knots(templ), knots(tempu))))
+  kx <- sort(unique(c(knots(templ), knots(tempu))))
   kx <- c(xlim[1],kx[kx>=xlim[1] & kx<=xlim[2]],xlim[2])
-  if(is.null(ylim)) ylim <- c(min(templ(kx)), max(tempu(kx)))+shift
-  if(add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main, ...)
-  for(i in 2:length(kx)) for(j in allv[allv>=templ(kx[i]) & allv<=tempu(kx[i])]) segments(kx[i-1],j+shift,kx[i],j+shift,col=col.b, lty = lty.b, lwd=lwd.b, lend=1)
+  allv <- allv[allv>=min(templ(kx)) & allv<=max(tempu(kx))]
+  if (is.null(support)) if(length(allv)>200) support <- "continuous" else support <- "empirical"
+  else if (support[1]!="empirical" & support[1]!="continuous") allv <- sort(unique(c(allv, support)))
+  if (is.null(ylim)) ylim <- c(min(templ(kx)), max(tempu(kx)))+shift
+  if (add==FALSE) plot(NA, xlim=xlim, ylab=ylab, xlab=xlab, ylim=ylim, main=main, ...)
+  if (support[1]!="continuous"){
+    for (i in 2:length(kx)) for(j in allv[allv>=templ(kx[i]) & allv<=tempu(kx[i]-.Machine$double.eps)]) segments(kx[i-1],j+shift,kx[i],j+shift,col=col.b, lty = lty.b, lwd=lwd.b, lend=1)
+  } else {
+    for (i in 2:length(kx)) polygon(c(kx[i-1], kx[i-1], kx[i], kx[i]), c(templ(kx[i])+shift, tempu(kx[i]-.Machine$double.eps)+shift, tempu(kx[i]-.Machine$double.eps)+shift, templ(kx[i])+shift),col=col.b, border=col.b)
+  }
+  kx <- sort(knots(temp))
+  kx <- c(xlim[1],kx[kx>=xlim[1] & kx<=xlim[2]],xlim[2])
   for(i in 2:length(kx)) segments(kx[i-1],temp(kx[i])+shift,kx[i],temp(kx[i])+shift,col=col.l, lty = lty.l, lwd=lwd.l)
 }
 
-uncond_cdfs_dr <- function(ys, y0, y1, x0, x1, w0, w1, x, w, method){
+uncond_cdfs_dr <- function(ys, ye, xe, we,  x, w, method){
   if (method!="sample") {
     if (method=="logit" | method=="probit" | method=="cauchit" | method=="cloglog") {
-      suppressWarnings(fit0  <- glm.fit(x0, (y0<=ys), weights=w0, family = binomial(link = method))$coef)
-      suppressWarnings(fit1  <- glm.fit(x1, (y1<=ys), weights=w1, family = binomial(link = method))$coef)
+      suppressWarnings(fit  <- glm.fit(xe, (ye<=ys), weights=we, family = binomial(link = method))$coef)
     } else if (method=="lpm") {
-      fit0  <- lm.wfit(x0, (y0<=ys), w=w0)$coef
-      fit1  <- lm.wfit(x1, (y1<=ys), w=w1)$coef
+      fit  <- lm.wfit(xe, (ye<=ys), w=we)$coef
     } else stop("The selected method has not yet been implemented.")
-    F0 <- x%*%fit0
-    F1 <- x%*%fit1
+    F <- x%*%fit
     if(method=="logit" | method=="probit" | method=="cauchit" | method=="cloglog"){
-      F0 <- binomial(method)$linkinv(F0)
-      F1 <- binomial(method)$linkinv(F1)
+      F <- binomial(method)$linkinv(F)
     }
-    F0 <- weighted.mean(F0,w)
-    F1 <- weighted.mean(F1,w)
+    weighted.mean(F, w)
   } else {
-    F0 <- weighted.mean((y0<=ys), w=w0)
-    F1 <- weighted.mean((y1<=ys), w=w1)
+    weighted.mean((ye<=ys), w=we)
   }
-  c(F0,F1)
 }

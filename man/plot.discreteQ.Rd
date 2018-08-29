@@ -8,7 +8,8 @@ discrete outcomes}
 \method{plot}{discreteQ}(x, ..., which = NULL, xlim = NULL,
   ylim = NULL, main = NULL, xlab = NULL, ylab = NULL,
   add = FALSE, col.l = "dark blue", col.b = "light blue",
-  shift = NULL, lty.l = 1, lwd.l = 1, lty.b = 1, lwd.b = 5)
+  shift = NULL, lty.l = 1, lwd.l = 1, lty.b = 1, lwd.b = 5,
+  support = NULL)
 }
 \arguments{
 \item{x}{an object produced by \code{discreteQ}.}
@@ -42,6 +43,8 @@ discrete outcomes}
 \item{lty.b}{line types for the uniform bands.}
 
 \item{lwd.b}{line width for the confidence bands.}
+
+\item{support}{type of support restriction. If \code{support="empirical"}, it is assumed that the support of the function(s) of interest (Q0, Q1, Qc, QTE, etc.) is equal to the support of the outcome in the sample. Alternatively, no restriction on the support is assumed if \code{support="continuous"}. Finally, \code{support} may directly contain the vector of all values that the relevant function (Q0, Q1 or QTE) can take. By default, \code{support="empirical"} if there are less than 200 points in the empirical support and \code{support="continuous"} otherwise.}
 }
 \value{
 None.
