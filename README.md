@@ -5,7 +5,7 @@ The discreteQ repository
 
 This repository contains two different parts:
 
-1.  In the folder repository you can find the datasets and the R codes that generated all the results in the paper in the paper "Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val, Blaise Melly, and Kaspar Wuethrich. This paper is available at <https://arxiv.org/abs/1608.05142>. The first empirical example uses data from the Oregon health experiment. The data are available at <http://www.nber.org/oregon/4.data.html>. The second empirical example is a decomposition of the black-white testscore gap. The data are available at dx.doi.org/10.1257/aer.103.2.981. The codes that produce the simulations results in Apendix C are also provided.
+1.  In the folder repository you can find the datasets and the R codes that generated all the results in the paper in the paper "Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val, Blaise Melly and Kaspar Wuethrich. This paper is available at <https://arxiv.org/abs/1608.05142>. The first empirical example uses data from the Oregon health experiment. The data are available at <http://www.nber.org/oregon/4.data.html>. The second empirical example is a decomposition of the black-white testscore gap. The data are available at dx.doi.org/10.1257/aer.103.2.981. The codes that produce the simulations results in Apendix C are also provided.
 
 2.  The R package that contain generic functions that allows researchers to easily apply the methods suggested in the paper "Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes" written by V. Chernozhukov, I. Fernandez-Val, B. Melly, and K. Wuethrich. This paper is available at <https://arxiv.org/abs/1608.05142>. The goal of discreteQ is to perform inference on quantile functions, quantile treatment effect functions and decompositions of differences between quantile functions for possibly discrete outcomes.
 
@@ -158,22 +158,6 @@ We can illustrate this third type of applications with the same data. We simply 
 
 ``` r
 results4 <- discreteQ(outcome, treatment, cbind(1, reg), decomposition=TRUE)
-#>       ys0   lb.F0j.i  ub.F0j.i   lb.Fcj.i   ub.Fcj.i
-#>  [1,]   0 0.05292716 0.1050728 0.03317772 0.06993214
-#>  [2,]   1 0.19827343 0.2797266 0.12271947 0.19447509
-#>  [3,]   2 0.36590388 0.4660961 0.23840847 0.32527746
-#>  [4,]   3 0.49861221 0.5933878 0.34495117 0.43672898
-#>  [5,]   4 0.62008067 0.7059193 0.46475339 0.56240504
-#>  [6,]   5 0.70811756 0.7918824 0.57397086 0.67961176
-#>  [7,]   6 0.80016799 0.8678320 0.69515095 0.80573744
-#>  [8,]   7 0.87186908 0.9321309 0.80538805 0.89578437
-#>  [9,]   8 0.91317306 0.9588269 0.87004016 0.93480713
-#> [10,]   9 0.95516277 0.9848372 0.93012569 0.97839648
-#> [11,]  10 0.97313712 0.9948629 0.95913263 0.99207919
-#> [12,]  11 0.98530674 0.9986933 0.97692862 0.99867729
-#> [13,]  12 0.99446551 1.0000000 0.99158594 1.00000000
-#> [14,]  13 0.99657707 1.0000000 0.99469262 1.00000000
-#> [15,]  15 1.00000000 1.0000000 1.00000000 1.00000000
 plot(results4)
 ```
 
