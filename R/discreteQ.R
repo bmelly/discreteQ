@@ -58,7 +58,7 @@
 #' plot(results3)
 #' plot(results3, which="composition")
 
-#' @importFrom graphics legend par plot segments
+#' @importFrom graphics legend par plot segments polygon
 #' @importFrom stats IQR binomial glm.fit knots lm.wfit quantile rexp stepfun
 #'   weighted.mean
 

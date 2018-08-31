@@ -144,7 +144,7 @@ dq_plot.qte <- function(object, which=NULL, xlim=NULL, ylim=NULL, main=NULL, xla
   if (support[1]!="continuous"){
     for (i in 2:length(kx)) for(j in allv[allv>=templ(kx[i]) & allv<=tempu(kx[i]-.Machine$double.eps)]) segments(kx[i-1],j+shift,kx[i],j+shift,col=col.b, lty = lty.b, lwd=lwd.b, lend=1)
   } else {
-    for (i in 2:length(kx)) polygon(c(kx[i-1], kx[i-1], kx[i], kx[i]), c(templ(kx[i])+shift, tempu(kx[i]-.Machine$double.eps)+shift, tempu(kx[i]-.Machine$double.eps)+shift, templ(kx[i])+shift),col=col.b, border=col.b)
+    for (i in 2:length(kx)) graphics::polygon(c(kx[i-1], kx[i-1], kx[i], kx[i]), c(templ(kx[i])+shift, tempu(kx[i]-.Machine$double.eps)+shift, tempu(kx[i]-.Machine$double.eps)+shift, templ(kx[i])+shift),col=col.b, border=col.b)
   }
   kx <- sort(knots(temp))
   kx <- c(xlim[1],kx[kx>=xlim[1] & kx<=xlim[2]],xlim[2])
