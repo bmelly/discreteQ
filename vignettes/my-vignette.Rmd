@@ -40,7 +40,7 @@ outcome <- rpois(100, 3)
 results1 <- discreteQ(outcome)
 ```
 
-The output of the function is a list of step functions:
+The output of the function is a list of step functions (the range of quantiles considered, the values at which the distribution function has been estimated and the type of model are also reported at then end):
 
 ```{r example2}
 results1

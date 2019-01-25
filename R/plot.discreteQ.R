@@ -72,4 +72,5 @@ plot.discreteQ <- function(x, ..., which=NULL, xlim=NULL, ylim=NULL, main=NULL, 
   } else if (x$model=="univariate"){
     dq_plot.univariate(x, xlim, ylim, main, xlab, ylab, add, col.l, col.b, shift, lty.l, lwd.l, lty.b, lwd.b, support, ...)
   }
+  invisible(x)
 }
