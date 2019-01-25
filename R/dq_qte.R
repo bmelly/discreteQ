@@ -16,7 +16,7 @@ dq_qte <-
            list_of_seeds = NULL,
            return.seeds = FALSE) {
     if (!is.null(cl)){
-      parallel::clusterExport(cl, c("boot_cdfs", "uncond_cdfs_po", "uncond_cdfs_dr", "uncond_cdfs_dr_int", "uncond_cdfs_drp", "uncond_cdfs_drp_int", "objective"))
+      parallel::clusterExport(cl, c("boot_cdfs", "uncond_cdfs_po", "uncond_cdfs_dr", "uncond_cdfs_dr_int", "uncond_cdfs_drp", "uncond_cdfs_drp_int", "objective"), envir=environment())
       doParallel::registerDoParallel(cl)
     }
     if(is.null(old.res)){

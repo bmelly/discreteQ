@@ -83,7 +83,8 @@ dq_decomposition <-
             "uncond_cdfs_drp",
             "uncond_cdfs_drp_int",
             "objective"
-          )
+          ),
+          envir=environment()
         )
         doParallel::registerDoParallel(cl)
       }
