@@ -34,6 +34,7 @@ Imports:
     doParallel,
     foreach,
     parallel,
+    plyr,
     rngtools,
     stats
 RoxygenNote: 6.1.1

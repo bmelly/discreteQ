@@ -49,7 +49,7 @@ dq_qte <-
             sort(yu0)
         else
           ys0 <-
-            sort(unique(quantile(y[d == 0], seq(
+            sort(unique(stats::quantile(y[d == 0], seq(
               1 / 100, 99 / 100, 1 / 100
             ), type = 1)))
         if (length(yu1) < 100)
@@ -57,16 +57,16 @@ dq_qte <-
             sort(yu1)
         else
           ys1 <-
-            sort(unique(quantile(y[d == 1], seq(
+            sort(unique(stats::quantile(y[d == 1], seq(
               1 / 100, 99 / 100, 1 / 100
             ), type = 1)))
       } else if (length(ys) == 1) {
         ys0 <-
-          sort(unique(quantile(y[d == 0], seq(
+          sort(unique(stats::quantile(y[d == 0], seq(
             1 / (ys + 1), ys / (ys + 1), 1 / ys
           ), type = 1)))
         ys1 <-
-          sort(unique(quantile(y[d == 1], seq(
+          sort(unique(stats::quantile(y[d == 1], seq(
             1 / (ys + 1), ys / (ys + 1), 1 / ys
           ), type = 1)))
       } else{
@@ -98,6 +98,7 @@ dq_qte <-
       if(is.null(cl)) {
         F.b <- sapply(1:bsrep, function(i) boot_cdfs(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster))
       } else{
+        i <- NULL
         F.b <- foreach::`%dopar%`(foreach::foreach(i = 1:bsrep),{boot_cdfs(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster)})
         F.b <- matrix(unlist(F.b),ncol=bsrep)
         #F.b <- parSapply(cl, 1:bsrep, function(iter) boot_cdfs(iter, ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster))
@@ -119,9 +120,9 @@ dq_qte <-
     F0.b <- F.b[1:length(ys0),]
     F1.b <- F.b[(length(ys0)+1):(length(ys0)+length(ys1)),]
     delta.0 <- F0.b - F0
-    se.0 <- apply(F0.b, 1, function(x) IQR(x) / 1.349)
+    se.0 <- apply(F0.b, 1, function(x) stats::IQR(x) / 1.349)
     delta.1 <- F1.b - F1
-    se.1 <- apply(F1.b, 1, function(x) IQR(x) / 1.349
+    se.1 <- apply(F1.b, 1, function(x) stats::IQR(x) / 1.349
     )
     select.1 <-
       (F1.b >= q.range[1]) * (rbind(0, F1.b[1:(nrow(F1.b) - 1), ]) < q.range[2])
@@ -130,7 +131,7 @@ dq_qte <-
     zs.j <-
       apply(rbind(abs(delta.1 * select.1) / se.1, abs(delta.0 * select.0) / se.0),  2, max, na.rm = TRUE)
 
-    crt.j <- quantile(zs.j, 1 - alpha)
+    crt.j <- stats::quantile(zs.j, 1 - alpha)
     ub.F0j.i <- sort(F0 + crt.j * se.0)
     lb.F0j.i <- sort(F0 - crt.j * se.0)
     ub.F0j.i <- ifelse(ub.F0j.i <= 1, ub.F0j.i, 1)
@@ -150,7 +151,7 @@ dq_qte <-
     ub.Q1j.func <- stats::stepfun(lb.F1j.i, c(ys1, max1), right = FALSE)
     lb.Q1j.func <- stats::stepfun(ub.F1j.i, c(ys1, max1), right = TRUE)
 
-    knots.new <- sort(unique(c(knots(Q1.func), knots(Q0.func))))
+    knots.new <- sort(unique(c(stats::knots(Q1.func), stats::knots(Q0.func))))
     QTE.func <-
       stats::stepfun(knots.new, c(
         Q1.func(knots.new - .Machine$double.eps) - Q0.func(knots.new - .Machine$double.eps),
@@ -158,7 +159,7 @@ dq_qte <-
       ), right = TRUE)
     knots.new <-
       sort(unique(c(
-        knots(lb.Q1j.func), knots(ub.Q0j.func)
+        stats::knots(lb.Q1j.func), stats::knots(ub.Q0j.func)
       )))
     lb.QTE.func <-
       stats::stepfun(knots.new, c(
@@ -167,7 +168,7 @@ dq_qte <-
       ), right = TRUE)
     knots.new <-
       sort(unique(c(
-        knots(ub.Q1j.func), knots(lb.Q0j.func)
+        stats::knots(ub.Q1j.func), stats::knots(lb.Q0j.func)
       )))
     ub.QTE.func <-
       stats::stepfun(knots.new, c(
@@ -322,7 +323,7 @@ dq_plot.qte <-
         if (is.null(ylab))
           ylab <- "Quantile function"
       }
-      kx <- sort(unique(c(knots(templ), knots(tempu))))
+      kx <- sort(unique(c(stats::knots(templ), stats::knots(tempu))))
       kx <- c(xlim[1], kx[kx >= xlim[1] & kx <= xlim[2]], xlim[2])
       allv <- allv[allv >= min(templ(kx)) & allv <= max(tempu(kx))]
       if (is.null(support))
@@ -336,7 +337,7 @@ dq_plot.qte <-
       if (is.null(ylim))
         ylim <- c(min(templ(kx)), max(tempu(kx))) + shift
       if (add == FALSE)
-        plot(
+        graphics::plot(
           NA,
           xlim = xlim,
           ylab = ylab,
@@ -349,7 +350,7 @@ dq_plot.qte <-
         for (i in 2:length(kx))
           for (j in allv[allv >= templ(kx[i]) &
                          allv <= tempu(kx[i] - .Machine$double.eps)])
-            segments(
+            graphics::segments(
               kx[i - 1],
               j + shift,
               kx[i],
@@ -373,10 +374,10 @@ dq_plot.qte <-
             border = col.b
           )
       }
-      kx <- sort(knots(temp))
+      kx <- sort(stats::knots(temp))
       kx <- c(xlim[1], kx[kx >= xlim[1] & kx <= xlim[2]], xlim[2])
       for (i in 2:length(kx))
-        segments(
+        graphics::segments(
           kx[i - 1],
           temp(kx[i]) + shift,
           kx[i],
@@ -426,7 +427,7 @@ dq_plot.qte <-
       if (is.null(ylim))
         ylim <- c(min(templ(allv)), max(tempu(allv)))
       if (add == FALSE){
-        plot(
+        graphics::plot(
           temp(allv),
           xlim = xlim,
           ylab = ylab,
@@ -439,7 +440,7 @@ dq_plot.qte <-
         )
       }
       for (v in 1:(length(allv)-1)){
-        polygon(
+        graphics::polygon(
           c(allv[v], allv[v + 1], allv[v + 1], allv[v]),
           c(
             templ(allv[v]),
@@ -451,7 +452,7 @@ dq_plot.qte <-
           border = NA
         )
       }
-        lines(
+        graphics::lines(
           temp,
           verticals = FALSE,
           do.points = FALSE,
@@ -469,21 +470,21 @@ uncond_cdfs_dr_int <-
           method == "probit" |
           method == "cauchit" | method == "cloglog") {
         suppressWarnings(fit  <-
-                           glm.fit(
+                           stats::glm.fit(
                              xe,
                              (ye <= ys),
                              weights = we,
-                             family = binomial(link = method)
+                             family = stats::binomial(link = method)
                            )$coef)
       } else if (method == "lpm") {
-        fit  <- lm.wfit(xe, (ye <= ys), w = we)$coef
+        fit  <- stats::lm.wfit(xe, (ye <= ys), w = we)$coef
       } else
         stop("The selected method has not yet been implemented.")
       F <- x %*% fit
       if (method == "logit" |
           method == "probit" |
           method == "cauchit" | method == "cloglog") {
-        F <- binomial(method)$linkinv(F)
+        F <- stats::binomial(method)$linkinv(F)
       }
       stats::weighted.mean(F, w)
     } else {
@@ -514,26 +515,27 @@ uncond_cdfs_dr <- function(ys, ye, xe, we,  x, w, method, cl){
     #     w = w,
     #     method = method
     #   ))
+     i <- NULL
      c(unlist(foreach::`%dopar%`(foreach::foreach(i = 1:length(ys)),{uncond_cdfs_dr_int(ys[i], ye, xe, we, x, w, method)})))
   }
 }
 
 uncond_cdfs_po <- function(ys, ye, xe, we,  x, w) {
-  fit  <- glm(ye~xe-1, weights = we, family = poisson)$coef
+  fit  <- stats::glm(ye~xe-1, weights = we, family = stats::poisson)$coef
   lambda <- exp(x %*% fit)
-  sapply(ys, function(l) stats::weighted.mean(ppois(l, lambda = lambda), w))
+  sapply(ys, function(l) stats::weighted.mean(stats::ppois(l, lambda = lambda), w))
 }
 
 boot_cdfs <- function(seed, ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster) {
   rngtools::RNGseed(seed)
   if (is.null(cluster)) {
-    bw0 <- rexp(n0) * w0
-    bw1 <- rexp(n1) * w1
+    bw0 <- stats::rexp(n0) * w0
+    bw1 <- stats::rexp(n1) * w1
     bw <- c(bw0, bw1)
   } else{
     cluster_id <- unique(cluster)
     nc <- length(cluster_id)
-    bwc <- rexp(nc)
+    bwc <- stats::rexp(nc)
     bw <- plyr::join(x = data.frame(cluster=cluster), y = data.frame(cluster = cluster_id, bw=bwc), by = "cluster", type = "left")[,"bw"] * c(w0, w1)
     bw0 <- bw[1:n0]
     bw1 <- bw[(n0+1):(n0+n1)]
@@ -556,13 +558,13 @@ boot_cdfs <- function(seed, ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cl
 # Maximum likelihood function
 objective <- function(beta, y, binary, x, w = 1) {
   lambda <- exp(x %*% beta)
-  prob <- pmin(pmax(ppois(y, lambda), 10 ^ -15), 1 - 10 ^ -15)
+  prob <- pmin(pmax(stats::ppois(y, lambda), 10 ^ -15), 1 - 10 ^ -15)
   - sum(w * (binary * log(prob) + (1 - binary) * log(1 - prob)))
 }
 
 uncond_cdfs_drp <- function(ys, ye, xe, we,  x, w, cl) {
   start <-
-    glm(ye ~ xe - 1, weight = we, family = poisson)$coef
+    stats::glm(ye ~ xe - 1, weight = we, family = stats::poisson)$coef
   if (is.null(cl)) {
     sapply(
       ys,
@@ -585,13 +587,14 @@ uncond_cdfs_drp <- function(ys, ye, xe, we,  x, w, cl) {
     #     w = w,
     #     start = start
     #   ))
-    c(unlist(foreach::`%dopar%`(foreach::foreach(i = 1:length(ys)),{uncond_cdfs_drp_int(ys[i], ye, xe, we, x, w, method)})))
+    i <- NULL
+    c(unlist(foreach::`%dopar%`(foreach::foreach(i = 1:length(ys)),{uncond_cdfs_drp_int(ys[i], ye, xe, we, x, w, start)})))
   }
 }
 
 uncond_cdfs_drp_int <-
   function(ys, ye, xe, we, x, w, start) {
-    fit  <- optim(
+    fit  <- stats::optim(
       start,
       objective,
       y = ys,
@@ -600,5 +603,5 @@ uncond_cdfs_drp_int <-
       w = we
     )$par
     lambda <- exp(x %*% fit)
-    stats::weighted.mean(ppois(ys, lambda = lambda), w)
+    stats::weighted.mean(stats::ppois(ys, lambda = lambda), w)
   }

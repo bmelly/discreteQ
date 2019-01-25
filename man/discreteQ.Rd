@@ -34,6 +34,14 @@ discreteQ(y, d = NULL, x = NULL, w = NULL, decomposition = FALSE,
 \item{cl}{a cluster object as returned by makeCluster. Parallel computing is not used if this argument is not specified.}
 
 \item{cluster}{vector that specifies to which group each observation belongs. The cluster bootstrap is used if this argument is specified. Otherwise, simple random sampling is assumed.}
+
+\item{old.res}{a discreteQ object (obtained with the argument return.boot set to TRUE). This argument allows for instance to change the size alpha without recomputing the estimates.}
+
+\item{return.boot}{logical scalar. The results of the bootstrap are return in the matrix F.b when this argument is set to TRUE.}
+
+\item{list_of_seeds}{list of seeds for L'Ecuyer RNG. The length of this list must be the same as the value of the argument bsrep.}
+
+\item{return.seeds}{logical scalar. The list of seeds is return by the function if this argument is set to TRUE.}
 }
 \value{
 A list of step functions (of class \code{stepfun}). For each disctribution function, quantile function or quantile effect function of interest (2 in case (i), 5 in case (ii) and 9 in case (iii)), three step functions are returned: one for the point estimates, one for the lower bound of the confidence band and one for the upper bound of the confidence band. There are methods available for plotting ("\code{plot}", see \code{\link{plot.discreteQ}}) and summarizing ("\code{summary}", see \code{\link{summary.discreteQ}}) "\code{discreteQ}" objects. We recommend using them to analyze the results.

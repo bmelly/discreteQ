@@ -32,6 +32,10 @@
 #' @param ys specifies the thresholds at which the cumulative distribution function will be estimated. This argument can be specified either as a scalar that will be interpreted as the number of thresholds or as a vector that will contain the values of the thresholds. By default, the cdf is estimated at all distinct observed values of the outcome in the sample if there are less than 100 unique values and at 99 different values if there are more than 100 distinct values.
 #' @param cl a cluster object as returned by makeCluster. Parallel computing is not used if this argument is not specified.
 #' @param cluster vector that specifies to which group each observation belongs. The cluster bootstrap is used if this argument is specified. Otherwise, simple random sampling is assumed.
+#' @param old.res a discreteQ object (obtained with the argument return.boot set to TRUE). This argument allows for instance to change the size alpha without recomputing the estimates.
+#' @param return.boot logical scalar. The results of the bootstrap are return in the matrix F.b when this argument is set to TRUE.
+#' @param list_of_seeds list of seeds for L'Ecuyer RNG. The length of this list must be the same as the value of the argument bsrep.
+#' @param return.seeds logical scalar. The list of seeds is return by the function if this argument is set to TRUE.
 #' @return A list of step functions (of class \code{stepfun}). For each disctribution function, quantile function or quantile effect function of interest (2 in case (i), 5 in case (ii) and 9 in case (iii)), three step functions are returned: one for the point estimates, one for the lower bound of the confidence band and one for the upper bound of the confidence band. There are methods available for plotting ("\code{plot}", see \code{\link{plot.discreteQ}}) and summarizing ("\code{summary}", see \code{\link{summary.discreteQ}}) "\code{discreteQ}" objects. We recommend using them to analyze the results.
 #' @examples
 #' set.seed(1234)
@@ -60,9 +64,9 @@
 #' plot(results3)
 #' plot(results3, which="composition")
 
-#' @importFrom graphics legend par plot segments polygon
+#' @importFrom graphics legend par plot segments polygon lines
 #' @importFrom stats IQR binomial glm.fit knots lm.wfit quantile rexp stepfun
-#'   weighted.mean
+#'   weighted.mean glm optim poisson ppois
 #' @importFrom plyr join
 #' @importFrom foreach %dopar%
 #' @importFrom rngtools RNGseed

@@ -19,13 +19,13 @@ dq_univariate <-
           ys <- sort(yu)
         } else {
           ys <-
-            sort(unique(quantile(
+            sort(unique(stats::quantile(
               y, seq(1 / 1000, 999 / 1000, 1 / 1000), type = 1
             )))
         }
       } else if (length(ys) == 1) {
         ys <-
-          sort(unique(quantile(y, seq(
+          sort(unique(stats::quantile(y, seq(
             1 / (ys + 1), ys / (ys + 1), 1 / ys
           ), type = 1)))
       } else {
@@ -41,7 +41,7 @@ dq_univariate <-
                 1:bsrep,
                 function(i){
                       rngtools::RNGseed(list_of_seeds[[i]])
-                      bw  <-  w * rexp(n)
+                      bw  <-  w * stats::rexp(n)
                       sapply(ys, function(ys) stats::weighted.mean((y <= ys), bw))
                   }
               )
@@ -54,12 +54,12 @@ dq_univariate <-
       Q.func <- old.res$Q
     }
     delta <- F.b - F
-    se <- apply( F.b, 1, function(x) IQR(x) / 1.349)
+    se <- apply( F.b, 1, function(x) stats::IQR(x) / 1.349)
     select <-
       (F.b >= q.range[1]) * (rbind(0, F.b[1:(nrow(F.b) - 1), ]) < q.range[2])
     zs <- apply(rbind(abs(delta * select) / se),  2, max, na.rm = TRUE)
 
-    crt.q <- quantile(zs, 1 - alpha)
+    crt.q <- stats::quantile(zs, 1 - alpha)
     #bands for QFs
     ub.F.i <- sort(F + crt.q * se)
     lb.F.i <- sort(F - crt.q * se)
@@ -145,7 +145,7 @@ dq_plot.univariate <-
       )))
     kx <- c(xlim[1], kx[kx >= xlim[1] & kx <= xlim[2]], xlim[2])
     if (add == FALSE){
-      plot(
+      graphics::plot(
         NA,
         xlim = xlim,
         ylab = ylab,
@@ -171,7 +171,7 @@ dq_plot.univariate <-
       for (i in 2:length(kx)){
         for (j in all.y[all.y >= object$lb.Q(kx[i]) &
                         all.y <= object$ub.Q(kx[i] - .Machine$double.eps)]){
-          segments(
+          graphics::segments(
             kx[i - 1],
             j + shift,
             kx[i],
@@ -185,7 +185,7 @@ dq_plot.univariate <-
       }
     } else{
       for (i in 2:length(kx)){
-        polygon(
+        graphics::polygon(
           c(kx[i - 1], kx[i - 1], kx[i], kx[i]),
           c(
             object$lb.Q(kx[i]) + shift,
@@ -199,7 +199,7 @@ dq_plot.univariate <-
       }
     }
     for (i in 2:length(kx)){
-      segments(
+      graphics::segments(
         kx[i - 1],
         object$Q(kx[i]) + shift,
         kx[i],
