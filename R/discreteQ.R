@@ -3,7 +3,7 @@
 #' \code{discreteQ} provides uniform confidence bands for the unconditional
 #' quantile function, the quantile treatment effect function or the
 #' decomposition of the observed difference between the quantile function of an
-#' outcome for two groups.
+#' outcome for two groups. This function implements the algorithms suggested in Chernozhukov, Fernandez-Val, Wuthrich and Melly (2019).
 #'
 #' \code{discreteQ} can be used in three different ways. First, if no treatment
 #' variable in \code{d} and no regressor in \code{x} are provided, then the the
@@ -18,25 +18,61 @@
 #' \code{x}) and unexplained component.
 #'
 #' The output of the function is a list of step functions. We recommend to use
-#' the \code{\link{plot.discreteQ}} and \code{\link{summary.discreteQ}} functions.
+#' the \code{\link{plot.discreteQ}} and \code{\link{summary.discreteQ}}
+#' functions.
 #'
 #' @param y outcome (vector).
 #' @param d treatment or group variable (vector of 0-1 binary values).
 #' @param x matrix of regressors (which must include a constant if appropriate).
 #' @param w optional sampling weights (vector).
-#' @param decomposition logical, indicating if the decomposition of the observed difference between the control and treated quantile functions should be performed. By default, inference about the quantile treatment effect function is performed.
-#' @param q.range vector of length 2 that provides the lowest and highest quantile indexes. The uniform bands will cover the whole QF and QE functionin this range. Default: c(0.05,0.95).
-#' @param method link function for the distribution regression model. Possible values: "logit" (the default), "probit", "cloglog", "lpm" (linear probability model, i.e. OLS estimation of binary regressions), "cauchit". This argument is relevant only if there are regressors in \code{x}.
+#' @param decomposition logical, indicating if the decomposition of the observed
+#'   difference between the control and treated quantile functions should be
+#'   performed. By default, inference about the quantile treatment effect
+#'   function is performed.
+#' @param q.range vector of length 2 that provides the lowest and highest
+#'   quantile indexes. The uniform bands will cover the whole QF and QE
+#'   functionin this range. Default: c(0.05,0.95).
+#' @param method link function for the distribution regression model. Possible
+#'   values: "logit" (the default), "probit", "cloglog", "lpm" (linear
+#'   probability model, i.e. OLS estimation of binary regressions), "cauchit".
+#'   This argument is relevant only if there are regressors in \code{x}.
 #' @param bsrep number of bootstrap replications. Default: 200.
 #' @param alpha confidence level. Default: 0.05.
-#' @param ys specifies the thresholds at which the cumulative distribution function will be estimated. This argument can be specified either as a scalar that will be interpreted as the number of thresholds or as a vector that will contain the values of the thresholds. By default, the cdf is estimated at all distinct observed values of the outcome in the sample if there are less than 100 unique values and at 99 different values if there are more than 100 distinct values.
-#' @param cl a cluster object as returned by makeCluster. Parallel computing is not used if this argument is not specified.
-#' @param cluster vector that specifies to which group each observation belongs. The cluster bootstrap is used if this argument is specified. Otherwise, simple random sampling is assumed.
-#' @param old.res a discreteQ object (obtained with the argument return.boot set to TRUE). This argument allows for instance to change the size alpha without recomputing the estimates.
-#' @param return.boot logical scalar. The results of the bootstrap are return in the matrix F.b when this argument is set to TRUE.
-#' @param list_of_seeds list of seeds for L'Ecuyer RNG. The length of this list must be the same as the value of the argument bsrep.
-#' @param return.seeds logical scalar. The list of seeds is return by the function if this argument is set to TRUE.
-#' @return A list of step functions (of class \code{stepfun}). For each disctribution function, quantile function or quantile effect function of interest (2 in case (i), 5 in case (ii) and 9 in case (iii)), three step functions are returned: one for the point estimates, one for the lower bound of the confidence band and one for the upper bound of the confidence band. There are methods available for plotting ("\code{plot}", see \code{\link{plot.discreteQ}}) and summarizing ("\code{summary}", see \code{\link{summary.discreteQ}}) "\code{discreteQ}" objects. We recommend using them to analyze the results.
+#' @param ys specifies the thresholds at which the cumulative distribution
+#'   function will be estimated. This argument can be specified either as a
+#'   scalar that will be interpreted as the number of thresholds or as a vector
+#'   that will contain the values of the thresholds. By default, the cdf is
+#'   estimated at all distinct observed values of the outcome in the sample if
+#'   there are less than 100 unique values and at 99 different values if there
+#'   are more than 100 distinct values.
+#' @param cl a cluster object as returned by makeCluster. Parallel computing is
+#'   not used if this argument is not specified.
+#' @param cluster vector that specifies to which group each observation belongs.
+#'   The cluster bootstrap is used if this argument is specified. Otherwise,
+#'   simple random sampling is assumed.
+#' @param old.res a discreteQ object (obtained with the argument return.boot set
+#'   to TRUE). This argument allows for instance to change the size alpha
+#'   without recomputing the estimates.
+#' @param return.boot logical scalar. The results of the bootstrap are return in
+#'   the matrix F.b when this argument is set to TRUE.
+#' @param list_of_seeds list of seeds for L'Ecuyer RNG. The length of this list
+#'   must be the same as the value of the argument bsrep.
+#' @param return.seeds logical scalar. The list of seeds is return by the
+#'   function if this argument is set to TRUE.
+#' @return The values returned by the function... 3 case.
+#'
+#'   A list of step functions (of class \code{stepfun}). For each
+#'   disctribution function, quantile function or quantile effect function of
+#'   interest (2 in case (i), 5 in case (ii) and 9 in case (iii)), three step
+#'   functions are returned: one for the point estimates, one for the lower
+#'   bound of the confidence band and one for the upper bound of the confidence
+#'   band. There are methods available for plotting ("\code{plot}", see
+#'   \code{\link{plot.discreteQ}}) and summarizing ("\code{summary}", see
+#'   \code{\link{summary.discreteQ}}) "\code{discreteQ}" objects. We recommend
+#'   using them to analyze the results.
+#'
+#'   And here the third case.
+#'
 #' @examples
 #' set.seed(1234)
 #' outcome <- rpois(100, 3)
@@ -81,7 +117,7 @@ discreteQ <-
            w = NULL,
            decomposition = FALSE,
            q.range = c(0.05, 0.95),
-           method = "logit",
+           method = NULL,
            bsrep = 200,
            alpha = 0.05,
            ys = NULL,
@@ -91,21 +127,48 @@ discreteQ <-
            return.boot = FALSE,
            list_of_seeds = NULL,
            return.seeds = FALSE) {
+    if(!is.null(d)){
+      if(length(d)!=length(y)) stop("y and d must have the same length.")
+    }
+    if(!is.null(x)){
+      if(nrow(as.matrix(x))!=length(y)){
+        stop("y and x must have the same number of rows.")
+      }
+    }
+    if(!is.null(w)){
+      if(length(w)!=length(y)) stop("y and w must have the same length.")
+    }
+    if(!is.null(cluster)){
+      if(length(cluster)!=length(y)) stop("y and cluster must have the same length.")
+    }
+    if(!is.null(old.res)){
+      bsrep <- old.res$bsrep
+    }
     if (is.null(d)) {
+      if(is.null(method)) method <- "empirical"
+      if(method != "empirical")
+        stop("The selected method has not yet been implemented.")
       if (!is.null(x))
-        stop("The argument x cannot be specified if d=NULL.")
+        stop("The argument x cannot be specified if d = NULL.")
       fit <- dq_univariate(y, q.range, w, bsrep, alpha, ys, old.res, return.boot, list_of_seeds, return.seeds)
       fit$model <- "univariate"
     } else if (!decomposition) {
+      if(is.null(method)) method <- "logit"
+      if(!(method %in% c("logit", "probit", "cloglog", "poisson", "lpm", "drp", "cauchit", "log")))
+        stop("The selected method has not yet been implemented.")
       fit <- dq_qte(y, d, x, w, q.range, method, bsrep, alpha, ys, cl, cluster, old.res, return.boot, list_of_seeds, return.seeds)
       fit$model <- "qte"
     } else {
       if (is.null(x))
-        stop("The argument x must be specified if decomposition=TRUE.")
+        stop("The argument x must be specified if decomposition = TRUE.")
+      if(is.null(method)) method <- "logit"
+      if(!(method %in% c("logit", "probit", "cloglog", "poisson", "lpm", "drp", "cauchit", "log")))
+        stop("The selected method has not yet been implemented.")
       fit <-
         dq_decomposition(y, x, d, w, q.range, method, bsrep, alpha, ys, cl, cluster, old.res, return.boot, list_of_seeds, return.seeds)
       fit$model <- "decomposition"
     }
+    fit$method <- method
     class(fit) <- "discreteQ"
     fit
   }

@@ -111,7 +111,6 @@ dq_qte <-
       F0 <- F0.func(ys0)
       F1 <- F1.func(ys1)
       F.b <- old.res$F.b
-      q.range <- old.res$q.range
       Q0.func <- old.res$Q0
       Q1.func <- old.res$Q1
       max0 <- max(ys0)
@@ -120,10 +119,9 @@ dq_qte <-
     F0.b <- F.b[1:length(ys0),]
     F1.b <- F.b[(length(ys0)+1):(length(ys0)+length(ys1)),]
     delta.0 <- F0.b - F0
-    se.0 <- apply(F0.b, 1, function(x) stats::IQR(x) / 1.349)
+    se.0 <- pmax(apply(F0.b, 1, function(x) stats::IQR(x) / 1.349), 1e-06)
     delta.1 <- F1.b - F1
-    se.1 <- apply(F1.b, 1, function(x) stats::IQR(x) / 1.349
-    )
+    se.1 <- pmax(apply(F1.b, 1, function(x) stats::IQR(x) / 1.349), 1e-06)
     select.1 <-
       (F1.b >= q.range[1]) * (rbind(0, F1.b[1:(nrow(F1.b) - 1), ]) < q.range[2])
     select.0 <-
@@ -187,15 +185,16 @@ dq_qte <-
       Q1 = Q1.func,
       lb.Q1 = lb.Q1j.func,
       ub.Q1 = ub.Q1j.func,
-      q.range = q.range,
-      ys0 = ys0,
-      ys1 = ys1,
       F0 = F0.func,
       F1 = F1.func,
       lb.F0 = lb.F0.func,
       lb.F1 = lb.F1.func,
       ub.F0 = ub.F0.func,
-      ub.F1 = ub.F1.func
+      ub.F1 = ub.F1.func,
+      q.range = q.range,
+      bsrep = bsrep,
+      ys0 = ys0,
+      ys1 = ys1
     )
   if(return.boot) res$F.b <- F.b
   if(return.seeds) res$seeds <- list_of_seeds

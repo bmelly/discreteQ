@@ -90,11 +90,11 @@ dq_decomposition <-
       }
 
       if (method == "poisson") {
-        Fc <- uncond_cdfs_po(ys0, y0, x0, w0, x1, w1)
+        Fc <- uncond_cdfs_po(ys1, y1, x1, w1, x0, w0)
       } else if (method == "drp") {
-        Fc <- uncond_cdfs_drp(ys0, y0, x0, w0, x1, w1, cl)
+        Fc <- uncond_cdfs_drp(ys1, y1, x1, w1, x0, w0, cl)
       } else{
-        Fc <- uncond_cdfs_dr(ys=ys1, ye=y1, xe=x1, we=w1, x=x0, w=w0, method=method, cl=cl)
+        Fc <- uncond_cdfs_dr(ys1, y1, x1, w1, x0, w0, method, cl)
       }
 
       Fc <- sort(Fc)
@@ -119,9 +119,6 @@ dq_decomposition <-
           sapply(1:bsrep, function(i)
             boot_decomp(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster))
       } else{
-        # F.b <-
-        #   parSapply(cl, 1:bsrep, function(iter)
-        #     boot_decomp(iter, ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster))
         i <- NULL
         F.b <-  foreach::`%dopar%`(foreach::foreach(i = 1:bsrep),{boot_decomp(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster)})
         F.b <- matrix(unlist(F.b),ncol=bsrep)
@@ -136,7 +133,6 @@ dq_decomposition <-
       F1 <- F1.func(ys1)
       Fc <- Fc.func(ys1)
       F.b <- old.res$F.b
-      q.range <- old.res$q.range
       Q0.func <- old.res$Q0
       Q1.func <- old.res$Q1
       Qc.func <- old.res$Qc
@@ -148,11 +144,11 @@ dq_decomposition <-
     Fc.b  <-
       F.b[(length(ys0) + length(ys1) + 1):(length(ys0) + 2*length(ys1)), ]
     delta.0 <- F0.b - F0
-    se.0 <- apply(F0.b, 1, function(x) stats::IQR(x) / 1.349)
+    se.0 <- pmax(apply(F0.b, 1, function(x) stats::IQR(x) / 1.349), 1e-06)
     delta.1 <- F1.b - F1
-    se.1 <- apply(F1.b, 1, function(x) stats::IQR(x) / 1.349)
+    se.1 <- pmax(apply(F1.b, 1, function(x) stats::IQR(x) / 1.349), 1e-06)
     delta.c <- Fc.b - Fc
-    se.c <- apply(Fc.b, 1, function(x) stats::IQR(x) / 1.349)
+    se.c <- pmax(apply(Fc.b, 1, function(x) stats::IQR(x) / 1.349), 1e-06)
     select.0 <-
       (F0.b >= q.range[1]) * (rbind(0, F0.b[1:(nrow(F0.b) - 1),]) < q.range[2])
     select.1 <-
@@ -223,7 +219,7 @@ dq_decomposition <-
       ), right = TRUE)
 
     knots.new <- sort(unique(c(stats::knots(Q1.func), stats::knots(Qc.func))))
-    unexplained <-
+    composition <-
       stats::stepfun(knots.new, c(
         Q1.func(knots.new - .Machine$double.eps) - Qc.func(knots.new - .Machine$double.eps),
         max1 - max0
@@ -232,7 +228,7 @@ dq_decomposition <-
       sort(unique(c(
         stats::knots(lb.Q1j.func), stats::knots(ub.Qcj.func)
       )))
-    lb.unexplained <-
+    lb.composition <-
       stats::stepfun(knots.new, c(
         lb.Q1j.func(knots.new - .Machine$double.eps) - ub.Qcj.func(knots.new - .Machine$double.eps),
         max1 - max0
@@ -241,13 +237,14 @@ dq_decomposition <-
       sort(unique(c(
         stats::knots(ub.Q1j.func), stats::knots(lb.Qcj.func)
       )))
-    ub.unexplained <-
+    ub.composition <-
       stats::stepfun(knots.new, c(
         ub.Q1j.func(knots.new - .Machine$double.eps) - lb.Qcj.func(knots.new - .Machine$double.eps),
         max1 - max0
       ), right = TRUE)
     knots.new <- sort(unique(c(stats::knots(Qc.func), stats::knots(Q0.func))))
-    composition <-
+
+    unexplained <-
       stats::stepfun(knots.new, c(
         Qc.func(knots.new - .Machine$double.eps) - Q0.func(knots.new - .Machine$double.eps),
         0
@@ -256,7 +253,7 @@ dq_decomposition <-
       sort(unique(c(
         stats::knots(lb.Qcj.func), stats::knots(ub.Q0j.func)
       )))
-    lb.composition <-
+    lb.unexplained <-
       stats::stepfun(knots.new, c(
         lb.Qcj.func(knots.new - .Machine$double.eps) - ub.Q0j.func(knots.new - .Machine$double.eps),
         0
@@ -265,7 +262,7 @@ dq_decomposition <-
       sort(unique(c(
         stats::knots(ub.Qcj.func), stats::knots(lb.Q0j.func)
       )))
-    ub.composition <-
+    ub.unexplained <-
       stats::stepfun(knots.new, c(
         ub.Qcj.func(knots.new - .Machine$double.eps) - lb.Q0j.func(knots.new - .Machine$double.eps),
         0
@@ -291,9 +288,6 @@ dq_decomposition <-
           Qc = Qc.func,
           lb.Qc = lb.Qcj.func,
           ub.Qc = ub.Qcj.func,
-          ys0 = ys0,
-          ys1 = ys1,
-          q.range = q.range,
           F0 = F0.func,
           F1 = F1.func,
           Fc = Fc.func,
@@ -302,7 +296,11 @@ dq_decomposition <-
           lb.Fc = lb.Fc.func,
           ub.F0 = ub.F0.func,
           ub.F1 = ub.F1.func,
-          ub.Fc = ub.Fc.func
+          ub.Fc = ub.Fc.func,
+          ys0 = ys0,
+          ys1 = ys1,
+          q.range = q.range,
+          bsrep = bsrep
       )
       if(return.boot) res$F.b <- F.b
       if(return.seeds) res$seeds <- list_of_seeds
@@ -341,7 +339,7 @@ dq_summary.decomposition <-
         )
       colnames(tab) <-
         c("quantile",
-          "Unexplained: Q1-Qc",
+          "Unexplained: Qc-Q0",
           "lower bound",
           "upper bound")
     } else if (which == "composition") {
@@ -354,7 +352,7 @@ dq_summary.decomposition <-
         )
       colnames(tab) <-
         c("quantile",
-          "Composition: Qc-Q0",
+          "Composition: Q1-Qc",
           "lower bound",
           "upper bound")
     } else if (which == "Q0") {
@@ -456,8 +454,8 @@ dq_plot.decomposition <-
           c(
             "Quantile functions",
             "Observed difference (Q1-Q0)",
-            "Composition effect (Qc-Q0)",
-            "Unexplained difference (Q1-Qc)"
+            "Composition effect (Q1-Qc)",
+            "Unexplained difference (Qc-Q0)"
           )
       } else if (length(main) != 4) {
         stop("For the decomposition plots, the argument main must be a vector of length 4.")
@@ -666,7 +664,7 @@ plot_decomposition_internal <-
         allv <- expand.grid(object$ys1, object$ys0)
         allv <- sort(unique(allv[, 1] - allv[, 2]))
         if (is.null(main))
-          main <- "Unexplained difference (Q1-Qc)"
+          main <- "Unexplained difference (Qc-Q0)"
         if (is.null(ylab))
           ylab <- "Quantile difference"
       } else if (which == "composition") {
@@ -676,7 +674,7 @@ plot_decomposition_internal <-
         allv <- expand.grid(object$ys0, object$ys0)
         allv <- sort(unique(allv[, 1] - allv[, 2]))
         if (is.null(main))
-          main <- "Composition effect (Qc-Q0)"
+          main <- "Composition effect (Q1-Qc)"
         if (is.null(ylab))
           ylab <- "Quantile difference"
       } else if (which == "Q0") {
@@ -865,7 +863,9 @@ uncond_cdfs_dr_int <-
     if (method != "sample") {
       if (method == "logit" |
           method == "probit" |
-          method == "cauchit" | method == "cloglog") {
+          method == "cauchit" |
+          method == "cloglog" |
+          method == "log") {
         suppressWarnings(fit  <-
                            stats::glm.fit(
                              xe,
@@ -963,7 +963,7 @@ boot_decomp <-
           stats::weighted.mean((y0 <= y), bw0)),
         sapply(ys1, function(y)
           stats::weighted.mean((y1 <= y), bw1)),
-        uncond_cdfs_po(ys0, y0, x0, bw0, x1, bw1)
+        uncond_cdfs_po(ys1, y1, x1, bw1, x0, bw0)
       )
     } else if (method == "drp") {
       c(
@@ -971,7 +971,7 @@ boot_decomp <-
           stats::weighted.mean((y0 <= y), bw0)),
         sapply(ys1, function(y)
           stats::weighted.mean((y1 <= y), bw1)),
-        uncond_cdfs_drp(ys0, y0, x0, bw0, x1, bw1, cl = NULL)
+        uncond_cdfs_drp(ys1, y1, x1, bw1, x0, bw0, cl = NULL)
       )
     } else{
       c(

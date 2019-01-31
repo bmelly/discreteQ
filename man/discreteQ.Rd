@@ -5,7 +5,7 @@
 \title{Uniform inference on quantile and quantile effects for discrete outcomes}
 \usage{
 discreteQ(y, d = NULL, x = NULL, w = NULL, decomposition = FALSE,
-  q.range = c(0.05, 0.95), method = "logit", bsrep = 200,
+  q.range = c(0.05, 0.95), method = NULL, bsrep = 200,
   alpha = 0.05, ys = NULL, cl = NULL, cluster = NULL,
   old.res = NULL, return.boot = FALSE, list_of_seeds = NULL,
   return.seeds = FALSE)
@@ -19,38 +19,72 @@ discreteQ(y, d = NULL, x = NULL, w = NULL, decomposition = FALSE,
 
 \item{w}{optional sampling weights (vector).}
 
-\item{decomposition}{logical, indicating if the decomposition of the observed difference between the control and treated quantile functions should be performed. By default, inference about the quantile treatment effect function is performed.}
+\item{decomposition}{logical, indicating if the decomposition of the observed
+difference between the control and treated quantile functions should be
+performed. By default, inference about the quantile treatment effect
+function is performed.}
 
-\item{q.range}{vector of length 2 that provides the lowest and highest quantile indexes. The uniform bands will cover the whole QF and QE functionin this range. Default: c(0.05,0.95).}
+\item{q.range}{vector of length 2 that provides the lowest and highest
+quantile indexes. The uniform bands will cover the whole QF and QE
+functionin this range. Default: c(0.05,0.95).}
 
-\item{method}{link function for the distribution regression model. Possible values: "logit" (the default), "probit", "cloglog", "lpm" (linear probability model, i.e. OLS estimation of binary regressions), "cauchit". This argument is relevant only if there are regressors in \code{x}.}
+\item{method}{link function for the distribution regression model. Possible
+values: "logit" (the default), "probit", "cloglog", "lpm" (linear
+probability model, i.e. OLS estimation of binary regressions), "cauchit".
+This argument is relevant only if there are regressors in \code{x}.}
 
 \item{bsrep}{number of bootstrap replications. Default: 200.}
 
 \item{alpha}{confidence level. Default: 0.05.}
 
-\item{ys}{specifies the thresholds at which the cumulative distribution function will be estimated. This argument can be specified either as a scalar that will be interpreted as the number of thresholds or as a vector that will contain the values of the thresholds. By default, the cdf is estimated at all distinct observed values of the outcome in the sample if there are less than 100 unique values and at 99 different values if there are more than 100 distinct values.}
+\item{ys}{specifies the thresholds at which the cumulative distribution
+function will be estimated. This argument can be specified either as a
+scalar that will be interpreted as the number of thresholds or as a vector
+that will contain the values of the thresholds. By default, the cdf is
+estimated at all distinct observed values of the outcome in the sample if
+there are less than 100 unique values and at 99 different values if there
+are more than 100 distinct values.}
 
-\item{cl}{a cluster object as returned by makeCluster. Parallel computing is not used if this argument is not specified.}
+\item{cl}{a cluster object as returned by makeCluster. Parallel computing is
+not used if this argument is not specified.}
 
-\item{cluster}{vector that specifies to which group each observation belongs. The cluster bootstrap is used if this argument is specified. Otherwise, simple random sampling is assumed.}
+\item{cluster}{vector that specifies to which group each observation belongs.
+The cluster bootstrap is used if this argument is specified. Otherwise,
+simple random sampling is assumed.}
 
-\item{old.res}{a discreteQ object (obtained with the argument return.boot set to TRUE). This argument allows for instance to change the size alpha without recomputing the estimates.}
+\item{old.res}{a discreteQ object (obtained with the argument return.boot set
+to TRUE). This argument allows for instance to change the size alpha
+without recomputing the estimates.}
 
-\item{return.boot}{logical scalar. The results of the bootstrap are return in the matrix F.b when this argument is set to TRUE.}
+\item{return.boot}{logical scalar. The results of the bootstrap are return in
+the matrix F.b when this argument is set to TRUE.}
 
-\item{list_of_seeds}{list of seeds for L'Ecuyer RNG. The length of this list must be the same as the value of the argument bsrep.}
+\item{list_of_seeds}{list of seeds for L'Ecuyer RNG. The length of this list
+must be the same as the value of the argument bsrep.}
 
-\item{return.seeds}{logical scalar. The list of seeds is return by the function if this argument is set to TRUE.}
+\item{return.seeds}{logical scalar. The list of seeds is return by the
+function if this argument is set to TRUE.}
 }
 \value{
-A list of step functions (of class \code{stepfun}). For each disctribution function, quantile function or quantile effect function of interest (2 in case (i), 5 in case (ii) and 9 in case (iii)), three step functions are returned: one for the point estimates, one for the lower bound of the confidence band and one for the upper bound of the confidence band. There are methods available for plotting ("\code{plot}", see \code{\link{plot.discreteQ}}) and summarizing ("\code{summary}", see \code{\link{summary.discreteQ}}) "\code{discreteQ}" objects. We recommend using them to analyze the results.
+The values returned by the function... 3 case.
+
+  A list of step functions (of class \code{stepfun}). For each
+  disctribution function, quantile function or quantile effect function of
+  interest (2 in case (i), 5 in case (ii) and 9 in case (iii)), three step
+  functions are returned: one for the point estimates, one for the lower
+  bound of the confidence band and one for the upper bound of the confidence
+  band. There are methods available for plotting ("\code{plot}", see
+  \code{\link{plot.discreteQ}}) and summarizing ("\code{summary}", see
+  \code{\link{summary.discreteQ}}) "\code{discreteQ}" objects. We recommend
+  using them to analyze the results.
+
+  And here the third case.
 }
 \description{
 \code{discreteQ} provides uniform confidence bands for the unconditional
 quantile function, the quantile treatment effect function or the
 decomposition of the observed difference between the quantile function of an
-outcome for two groups.
+outcome for two groups. This function implements the algorithms suggested in Chernozhukov, Fernandez-Val, Wüthrich and Melly (2019).
 }
 \details{
 \code{discreteQ} can be used in three different ways. First, if no treatment
@@ -66,7 +100,8 @@ decomposition of their difference into an explained (by the regressors
 \code{x}) and unexplained component.
 
 The output of the function is a list of step functions. We recommend to use
-the \code{\link{plot.discreteQ}} and \code{\link{summary.discreteQ}} functions.
+the \code{\link{plot.discreteQ}} and \code{\link{summary.discreteQ}}
+functions.
 }
 \examples{
 set.seed(1234)

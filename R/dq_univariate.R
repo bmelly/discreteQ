@@ -50,7 +50,6 @@ dq_univariate <-
       ys <- old.res$ys
       F <- F.func(ys)
       F.b <- old.res$F.b
-      q.range <- old.res$q.range
       Q.func <- old.res$Q
     }
     delta <- F.b - F
@@ -78,7 +77,8 @@ dq_univariate <-
         lb.F = lb.F.func,
         ub.F = ub.F.func,
         q.range = q.range,
-        ys = ys
+        ys = ys,
+        bsrep = bsrep
     )
     if(return.boot) res$F.b <- F.b
     if(return.seeds) res$seeds <- list_of_seeds
