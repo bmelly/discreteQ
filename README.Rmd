@@ -132,3 +132,4 @@ The bottom-right panel provides the results for the difference between the treat
 The specificty of discreteQ is that it can deal with discrete and mixed continuous-discrete outcomes. For continuous outcomes we recommend to use the package Counterfactual that can be installed from CRAN.
 
 For the precise definition of the estimators and their statistical properties.You are invited to read the paper "Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val, Blaise Melly, and Kaspar Wuethrich. This paper is available at https://arxiv.org/abs/1608.05142.
+

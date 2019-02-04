@@ -1,7 +1,7 @@
 Package: discreteQ
 Type: Package
 Title: Inference on quantile and quantile effects for discrete outcomes
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(person("Blaise", "Melly", role = c("aut", "cre"),
                      email = "blaise.melly@vwi.unibe"),
               person("Victor", "Chernozhukov", role = "aut"),

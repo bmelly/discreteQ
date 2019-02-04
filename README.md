@@ -48,14 +48,32 @@ results1
 #> $ub.Q
 #> Step function
 #> Call: stats::stepfun(lb.F.i, c(ys, max(ys)), right = FALSE)
-#>  x[1:8] =      0, 0.11767, 0.37104,  ..., 0.96454,      1
+#>  x[1:8] =      0, 0.12995, 0.36257,  ..., 0.97288,      1
 #> 9 plateau levels =      0,      1,      2,  ...,      8,      8
 #> 
 #> $lb.Q
 #> Step function
 #> Call: stats::stepfun(ub.F.i, c(ys, max(ys)), right = TRUE)
-#>  x[1:8] = 0.14781, 0.38233, 0.64896,  ...,      1,      1
+#>  x[1:8] = 0.14082, 0.37005, 0.65743,  ...,      1,      1
 #> 9 plateau levels =      0,      0,      1,  ...,      6,      8
+#> 
+#> $F
+#> Step function
+#> Call: stats::stepfun(ys, c(0, F))
+#>  x[1:8] =      0,      1,      2,  ...,      6,      8
+#> 9 plateau levels =      0,   0.07,   0.25,  ...,   0.99,      1
+#> 
+#> $lb.F
+#> Step function
+#> Call: stats::stepfun(ys, c(0, lb.F.i))
+#>  x[1:8] =      0,      1,      2,  ...,      6,      8
+#> 9 plateau levels =      0,      0, 0.12995,  ..., 0.97288,      1
+#> 
+#> $ub.F
+#> Step function
+#> Call: stats::stepfun(ys, c(0, ub.F.i))
+#>  x[1:8] =      0,      1,      2,  ...,      6,      8
+#> 9 plateau levels =      0, 0.14082, 0.37005,  ...,      1,      1
 #> 
 #> $q.range
 #> [1] 0.05 0.95
@@ -63,8 +81,14 @@ results1
 #> $ys
 #> [1] 0 1 2 3 4 5 6 8
 #> 
+#> $bsrep
+#> [1] 200
+#> 
 #> $model
 #> [1] "univariate"
+#> 
+#> $method
+#> [1] "empirical"
 #> 
 #> attr(,"class")
 #> [1] "discreteQ"
@@ -95,7 +119,7 @@ summary(results1)
 #> [10,]     0.50  2           2           3
 #> [11,]     0.55  3           2           3
 #> [12,]     0.60  3           2           3
-#> [13,]     0.65  3           3           4
+#> [13,]     0.65  3           2           4
 #> [14,]     0.70  3           3           4
 #> [15,]     0.75  4           3           4
 #> [16,]     0.80  4           3           5

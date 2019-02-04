@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# The discreteQ package
+# Introduction
 
 The discreteQ package containa generic functions that allows researchers to
 easily apply the methods suggested in the paper "Generic Inference on Quantile
@@ -27,7 +27,7 @@ https://arxiv.org/abs/1608.05142. The goal of discreteQ is to perform inference
 on quantile functions, quantile treatment effect functions and decompositions of
 differences between quantile functions for possibly discrete outcomes.
 
-# Examples with simulated data
+# Simple examples with simulated data
 
 ## Example 1: confidence bands for single quantile functions
 
