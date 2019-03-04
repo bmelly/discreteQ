@@ -10,21 +10,7 @@ Authors@R: c(person("Blaise", "Melly", role = c("aut", "cre"),
               person("Kaspar", "Wüthrich", role = "aut",
                      email = "kwuethrich@ucsd.edu "))
 Maintainer: Blaise Melly <blaise.melly@vwi.unibe.ch>
-Description: The package discreteQ implements the procedures developed and applied
-    in the research paper "Generic inferenc on quantile and quantile effect 
-    functions
-    for discrete outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val,
-    Blaise Melly and Kaspar Wüthrich. The command provides uniform bands for three 
-    different cases: (i) for the unconditional quantile function of an outcome 
-    variable, it
-    implements the algorithm defined in Appendix B of the paper;
-    (ii) for the quantile treatment effect of a binary treatment variable, it 
-    implements the algorithm used in the first application (Section 4.3);
-    (iii) for the decomposition of the difference between the quantile functions
-    of two groups, it implements the algorithm used in the second application
-    (Section 4.4). All procedures are valid for discrete, continuous and
-    mixed dicrete-continuous outcomes. See the paper for the precise definition 
-    of the estimators and their statistical properties.
+Description: The package discreteQ implements the procedures developed and applied in the research paper "Generic inferenc on quantile and quantile effect functions for discrete outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val, Blaise Melly and Kaspar Wüthrich. The command provides uniform bands for three different cases: (i) for the unconditional quantile function of an outcome variable, it implements the algorithm defined in Appendix B of the paper; (ii) for the quantile treatment effect of a binary treatment variable, it implements the algorithm used in the first application (Section 4.3); (iii) for the decomposition of the difference between the quantile functions of two groups, it implements the algorithm used in the second application (Section 4.4). All procedures are valid for discrete, continuous and mixed dicrete-continuous outcomes. See the paper for the precise definition of the estimators and their statistical properties.
 License: MIT + file LICENSE
 URL: http://github.com/bmelly/discreteQ
 BugReports: http://github.com/bmelly/discreteQ/issues

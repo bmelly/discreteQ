@@ -24,10 +24,12 @@ dq_univariate <-
             )))
         }
       } else if (length(ys) == 1) {
-        ys <-
-          sort(unique(stats::quantile(y, seq(
-            1 / (ys + 1), ys / (ys + 1), 1 / ys
-          ), type = 1)))
+        if(ys < length(yu)){
+          ys <-
+            sort(unique(stats::quantile(y, seq(
+              1 / (ys + 1), ys / (ys + 1), 1 / ys
+            ), type = 1)))
+        } else ys <- sort(yu)
       } else {
         ys <- unique(sort(ys[ys %in% yu]))
       }

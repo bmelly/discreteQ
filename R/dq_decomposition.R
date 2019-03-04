@@ -57,7 +57,7 @@ dq_decomposition <-
                                  ),
                                  type = 1)))
         }
-        if (length(ys) > length(yu1)) {
+        if (ys > length(yu1)) {
           ys1 <- sort(yu1)
         } else {
           ys1 <- sort(unique(stats::quantile(y[g == 1],

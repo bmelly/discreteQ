@@ -45,30 +45,36 @@ dq_qte <-
       yu1 <- unique(y[d == 1])
       if (is.null(ys)) {
         if (length(yu0) < 100)
-          ys0 <-
-            sort(yu0)
+          ys0 <- sort(yu0)
         else
           ys0 <-
             sort(unique(stats::quantile(y[d == 0], seq(
               1 / 100, 99 / 100, 1 / 100
             ), type = 1)))
         if (length(yu1) < 100)
-          ys1 <-
-            sort(yu1)
+          ys1 <- sort(yu1)
         else
           ys1 <-
             sort(unique(stats::quantile(y[d == 1], seq(
               1 / 100, 99 / 100, 1 / 100
             ), type = 1)))
       } else if (length(ys) == 1) {
-        ys0 <-
-          sort(unique(stats::quantile(y[d == 0], seq(
-            1 / (ys + 1), ys / (ys + 1), 1 / ys
-          ), type = 1)))
-        ys1 <-
-          sort(unique(stats::quantile(y[d == 1], seq(
-            1 / (ys + 1), ys / (ys + 1), 1 / ys
-          ), type = 1)))
+        if (ys > length(yu0)) {
+          ys0 <- sort(yu0)
+        } else {
+          ys0 <-
+            sort(unique(stats::quantile(y[d == 0], seq(
+              1 / (ys + 1), ys / (ys + 1), 1 / ys
+            ), type = 1)))
+        }
+        if (ys > length(yu1)) {
+          ys1 <- sort(yu1)
+        } else {
+          ys1 <-
+            sort(unique(stats::quantile(y[d == 1], seq(
+              1 / (ys + 1), ys / (ys + 1), 1 / ys
+            ), type = 1)))
+        }
       } else{
         ys0 <- unique(sort(ys[ys %in% yu0]))
         ys1 <- unique(sort(ys[ys %in% yu1]))

@@ -30,7 +30,7 @@
 #'
 #' @param y outcome (vector of length n).
 #' @param d treatment or group variable (binary vector of length n).
-#' @param x matrix of regressors (n x p matrix which must include a constant if appropriate).
+#' @param x matrix of regressors (n x p matrix). \code{x} must include a constant if appropriate (i.e. the constant is NOT added automatically). The function \code{\link[stats]{model.matrix}} can be used to create the matrix \code{x} if factor variables or interaction terms are present.
 #' @param w sampling weights (vector of length n).
 #' @param decomposition logical, indicating if the decomposition of the observed
 #'   difference between the control and treated quantile functions should be
@@ -41,7 +41,7 @@
 #'   function in this range. Default is c(0.05,0.95).
 #' @param method link function for the distribution regression model. Possible
 #'   values: "logit" (the default), "probit", "cloglog", "lpm" (linear
-#'   probability model, i.e. OLS estimation of binary regressions), "cauchit", "drp" (incomplete gamma link function suggested in Chernozhukov, Fernandez-Val, Wutrich and Melly (2019). The Poisson regression model is assumed if \code{method = "poisson"}.
+#'   probability model, i.e. OLS estimation of binary regressions), "cauchit", "drp" (incomplete gamma link function suggested in Chernozhukov, Fernandez-Val, Wutrich and Melly (2019). The maximum likelihood estimator of the fully parametric Poisson regression model is used if \code{method = "poisson"}.
 #'   This argument is relevant only if there are regressors in \code{x}.
 #' @param bsrep number of bootstrap replications. Default: 200.
 #' @param alpha confidence level. Default: 0.05.
@@ -176,9 +176,9 @@
 #' ##Example 2: quantile treatment effect function (QTE)
 #' #Generate the data
 #' set.seed(1234)
-#' treatment <- c(rep(0,1000), rep(1,1000))
-#' reg <- rbinom(2000, 1, 0.4+treatment*0.2)
-#' outcome <- rpois(2000, lambda = 2+4*reg)
+#' treatment <- c(rep(0,100), rep(1,100))
+#' reg <- rbinom(200, 1, 0.4 + treatment*0.2)
+#' outcome <- rpois(200, lambda = 1+reg)
 #' #Estimate the functions and the confidence bands (takes about 1 minute)
 #' results2 <- discreteQ(outcome, treatment, cbind(1, reg))
 #' #Table containing the estimated QTE function with its confidence band
@@ -193,9 +193,9 @@
 #' ##Example 3: decomposition
 #' #Generate the data
 #' set.seed(1234)
-#' group <- c(rep(0,1000), rep(1,1000))
-#' reg <- rbinom(2000, 1, 0.4+group*0.2)
-#' outcome <- rpois(2000, lambda = exp(-2+4*reg))
+#' group <- c(rep(0,100), rep(1,100))
+#' reg <- rbinom(200, 1, 0.2 + group*0.6)
+#' outcome <- rpois(200, lambda = exp(-3+4*reg))
 #' #Estimate the functions and the confidence bands (takes about 30 seconds)
 #' results3 <- discreteQ(outcome, group, cbind(1, reg), decomposition=TRUE)
 #' #Table containing the unexplained component with its confidence band
