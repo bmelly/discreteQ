@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
 
 ## ----example1------------------------------------------------------------
 library(discreteQ)
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 outcome <- rpois(100, 3)
 results1 <- discreteQ(outcome)
 
@@ -21,7 +21,7 @@ plot(results1)
 summary(results1)
 
 ## ----example5------------------------------------------------------------
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 treatment <- c(rep(0,1000), rep(1,1000))
 reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
@@ -43,22 +43,22 @@ results4 <- discreteQ(outcome, treatment, cbind(1, reg), decomposition=TRUE)
 plot(results4)
 
 ## ----example10, fig.width=10, fig.height=10------------------------------
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 outcome <- rnorm(500, 3)
 results5 <- discreteQ(outcome, ys = Inf)
 plot(results5, support = "continuous")
 
 ## ----example11-----------------------------------------------------------
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 treatment <- c(rep(0,1000), rep(1,1000))
 reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
 #Without parallel computing
-set.seed(42)
+set.seed(42, kind = "L'Ecuyer-CMRG")
 system.time(results6 <- discreteQ(outcome, treatment, reg))
 my_cl <- parallel::makePSOCKcluster(2)
 #With parallel computing
-set.seed(42)
+set.seed(42, kind = "L'Ecuyer-CMRG")
 system.time(results7 <- discreteQ(outcome, treatment, reg, cl = my_cl ))
 
 ## ----example12-----------------------------------------------------------
