@@ -194,7 +194,7 @@ functions to analyze the results. For further details see the vignette available
 \examples{
 ##Example 1: univariate quantile function
 #Generate the data
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 outcome <- rpois(100, 3)
 #Estimate the functions and the confidence bands
 results1 <- discreteQ(outcome)
@@ -205,7 +205,7 @@ plot(results1)
 
 ##Example 2: quantile treatment effect function (QTE)
 #Generate the data
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 treatment <- c(rep(0,100), rep(1,100))
 reg <- rbinom(200, 1, 0.4 + treatment*0.2)
 outcome <- rpois(200, lambda = 1+reg)
@@ -222,7 +222,7 @@ plot(results2, which="Q1", add=TRUE, shift=0.2, col.l="dark green", col.b="light
 
 ##Example 3: decomposition
 #Generate the data
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 group <- c(rep(0,100), rep(1,100))
 reg <- rbinom(200, 1, 0.2 + group*0.6)
 outcome <- rpois(200, lambda = exp(-3+4*reg))

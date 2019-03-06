@@ -41,12 +41,12 @@
 #' @param ... other graphical parameters passed to \code{plot}.
 #' @return None.
 #' @examples
-#' set.seed(1234, kind = "L'Ecuyer-CMRG")
+#' set.seed(1234)
 #' outcome <- rpois(100, 3)
 #' results1 <- discreteQ(outcome)
 #' plot(results1)
 #'
-#' set.seed(1234, kind = "L'Ecuyer-CMRG")
+#' set.seed(1234)
 #' treatment <- c(rep(0,100), rep(1,100))
 #' reg <- rbinom(200, 1, 0.4+treatment*0.2)
 #' outcome <- rpois(200, lambda = 2+4*reg)
@@ -55,7 +55,7 @@
 #' plot(results2, which="Q0")
 #' plot(results2, which="Q1", add=TRUE, shift=0.2, col.l="dark green", col.b="light green")
 #'
-#' set.seed(1234, kind = "L'Ecuyer-CMRG")
+#' set.seed(1234)
 #' group <- c(rep(0,100), rep(1,100))
 #' reg <- rbinom(200, 1, 0.4+group*0.2)
 #' outcome <- rpois(200, lambda = exp(-2+4*reg))
