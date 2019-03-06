@@ -1,7 +1,7 @@
 context("Decomposition")
 library(discreteQ)
 
-set.seed(41, kind = "L'Ecuyer-CMRG")
+set.seed(41)
 group <- c(rep(0,50), rep(1,50))
 reg <- rbinom(100, 1, 0.4+group*0.2)
 outcome <- rpois(100, lambda = exp(-2+4*reg))
@@ -9,7 +9,7 @@ weights <- rbinom(100, 1, 0.5)
 quants <- runif(10)
 
 for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results1 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, bsrep = 10)
   test_that(
     paste("Check that the lower bound is lower than upper bound for decomposition, method: ", method), {
@@ -36,7 +36,7 @@ for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
     }
   )
 
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results2 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method=method, bsrep = 10, return.boot = TRUE, return.seeds = TRUE)
   test_that(
     paste("Check the bootstrap for qte, method: ", method),{
@@ -47,9 +47,9 @@ for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
     }
   )
 
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   list_of_seeds <- rngtools::RNGseq(10, simplify=FALSE)
-  set.seed(999, kind = "L'Ecuyer-CMRG")
+  set.seed(999)
   results3 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method=method, bsrep=10, list_of_seeds = list_of_seeds)
   results4 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method=method, bsrep=10, list_of_seeds = results2$seeds)
 
@@ -69,7 +69,7 @@ for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
 
   ncores <- min(2,parallel::detectCores())
   cl <- parallel::makePSOCKcluster(ncores)
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results5 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method=method, bsrep=10, cl=cl)
   results6 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method=method, bsrep=10, list_of_seeds = list_of_seeds)
 
@@ -88,9 +88,9 @@ for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
   )
 
   cluster <- rep(1:20, each=5)
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results7 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, bsrep=10, cluster = cluster)
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results8 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, bsrep=10, cluster = cluster, cl=cl)
   results9 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, bsrep=10, list_of_seeds = list_of_seeds, cluster=cluster, cl=cl)
   parallel::stopCluster(cl)
@@ -117,9 +117,9 @@ for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
     }
   )
 
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results10 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, w = weights, bsrep = 10)
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results11 <- discreteQ(outcome[weights==1], group[weights==1], cbind(1,reg[weights==1]), decomposition = TRUE, method = method, bsrep=10)
   test_that(
     paste("Weights for qte, method: ", method),{
@@ -129,7 +129,7 @@ for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
     }
   )
 
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results12 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, alpha = 0.1, bsrep = 10)
   results13 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, alpha=0.1, old.res = results2, bsrep=10)
   test_that(
@@ -160,7 +160,7 @@ for(method in c("logit", "probit", "lpm", "cloglog", "poisson", "drp")){
       expect_equal(results12$ub.Fc(0:10),results13$ub.Fc(0:10))
     })
 
-  set.seed(1234, kind = "L'Ecuyer-CMRG")
+  set.seed(1234)
   results14 <- discreteQ(outcome, group, cbind(1,reg), decomposition = TRUE, method = method, bsrep = 10, q.range = c(0.2,0.8))
   test_that(
     paste("Check that q.range is correct, method: ", method), {

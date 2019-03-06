@@ -46,7 +46,7 @@ library(discreteQ)
 
 ```{r example1}
 library(discreteQ)
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 outcome <- rpois(100, 3)
 results1 <- discreteQ(outcome)
 ```
@@ -76,7 +76,7 @@ If regressors are provided in the argument x, then the conditional distribution 
 
 Let's consider a second artificial example:
 ```{r example5}
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 treatment <- c(rep(0,1000), rep(1,1000))
 reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
@@ -134,7 +134,7 @@ Second, as shown in @chernozhukov2016generic, when the outcome is discrete we ca
 
 We know illustrate the use of the `discreteQ` functions with a continuous outcome:
 ```{r example10, fig.width=10, fig.height=10}
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 outcome <- rnorm(500, 3)
 results5 <- discreteQ(outcome, ys = Inf)
 plot(results5, support = "continuous")
@@ -158,16 +158,16 @@ Cluster sampling gives rise to correlation between units within the same cluster
 
 The computing time may be long if the numbers of observations, regressors, points in the support of the dependent variable, and bootstrap replications are large. For this reason, parallel processing has been implemented by `discreteQ()`. The user must first create a cluster object with the desired number of parallel processes. This object is then pass to `discreteQ()`via the argument `cl`. Here is a comparison of the computing time for a simple example:
 ```{r example11}
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 treatment <- c(rep(0,1000), rep(1,1000))
 reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
 #Without parallel computing
-set.seed(42, kind = "L'Ecuyer-CMRG")
+set.seed(42)
 system.time(results6 <- discreteQ(outcome, treatment, reg))
 my_cl <- parallel::makePSOCKcluster(2)
 #With parallel computing
-set.seed(42, kind = "L'Ecuyer-CMRG")
+set.seed(42)
 system.time(results7 <- discreteQ(outcome, treatment, reg, cl = my_cl ))
 ```
 

@@ -37,7 +37,7 @@ Example 1: confidence bands for single quantile functions
 
 ``` r
 library(discreteQ)
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 outcome <- rpois(100, 3)
 results1 <- discreteQ(outcome)
 ```
@@ -49,44 +49,44 @@ results1
 #> $Q
 #> Step function
 #> Call: stats::stepfun(F, c(ys, max(ys)), right = TRUE)
-#>  x[1:7] =   0.06,   0.16,   0.47,  ...,   0.98,      1
-#> 8 plateau levels =      0,      0,      1,  ...,      5,      6
+#>  x[1:8] =   0.07,   0.25,   0.51,  ...,   0.99,      1
+#> 9 plateau levels =      0,      0,      1,  ...,      6,      8
 #> 
 #> $ub.Q
 #> Step function
 #> Call: stats::stepfun(lb.F.i, c(ys, max(ys)), right = FALSE)
-#>  x[1:7] =      0, 0.034312, 0.30235,  ..., 0.94064,      1
-#> 8 plateau levels =      0,      1,      2,  ...,      6,      6
+#>  x[1:8] =      0, 0.12995, 0.36257,  ..., 0.97288,      1
+#> 9 plateau levels =      0,      1,      2,  ...,      8,      8
 #> 
 #> $lb.Q
 #> Step function
 #> Call: stats::stepfun(ub.F.i, c(ys, max(ys)), right = TRUE)
-#>  x[1:7] =  0.129, 0.28569, 0.63765,  ...,      1,      1
-#> 8 plateau levels =      0,      0,      1,  ...,      5,      6
+#>  x[1:8] = 0.14082, 0.37005, 0.65743,  ...,      1,      1
+#> 9 plateau levels =      0,      0,      1,  ...,      6,      8
 #> 
 #> $F
 #> Step function
 #> Call: stats::stepfun(ys, c(0, F))
-#>  x[1:7] =      0,      1,      2,  ...,      5,      6
-#> 8 plateau levels =      0,   0.06,   0.16,  ...,   0.98,      1
+#>  x[1:8] =      0,      1,      2,  ...,      6,      8
+#> 9 plateau levels =      0,   0.07,   0.25,  ...,   0.99,      1
 #> 
 #> $lb.F
 #> Step function
 #> Call: stats::stepfun(ys, c(0, lb.F.i))
-#>  x[1:7] =      0,      1,      2,  ...,      5,      6
-#> 8 plateau levels =      0,      0, 0.034312,  ..., 0.94064,      1
+#>  x[1:8] =      0,      1,      2,  ...,      6,      8
+#> 9 plateau levels =      0,      0, 0.12995,  ..., 0.97288,      1
 #> 
 #> $ub.F
 #> Step function
 #> Call: stats::stepfun(ys, c(0, ub.F.i))
-#>  x[1:7] =      0,      1,      2,  ...,      5,      6
-#> 8 plateau levels =      0,  0.129, 0.28569,  ...,      1,      1
+#>  x[1:8] =      0,      1,      2,  ...,      6,      8
+#> 9 plateau levels =      0, 0.14082, 0.37005,  ...,      1,      1
 #> 
 #> $q.range
 #> [1] 0.05 0.95
 #> 
 #> $ys
-#> [1] 0 1 2 3 4 5 6
+#> [1] 0 1 2 3 4 5 6 8
 #> 
 #> $bsrep
 #> [1] 200
@@ -114,19 +114,19 @@ The point estimates are shown in dark blue and the uniform bands in light blue. 
 ``` r
 summary(results1)
 #>       quantile QF lower bound upper bound
-#>  [1,]     0.05  0           0           2
-#>  [2,]     0.10  1           0           2
+#>  [1,]     0.05  0           0           1
+#>  [2,]     0.10  1           0           1
 #>  [3,]     0.15  1           1           2
-#>  [4,]     0.20  2           1           2
-#>  [5,]     0.25  2           1           2
-#>  [6,]     0.30  2           2           2
-#>  [7,]     0.35  2           2           3
+#>  [4,]     0.20  1           1           2
+#>  [5,]     0.25  1           1           2
+#>  [6,]     0.30  2           1           2
+#>  [7,]     0.35  2           1           2
 #>  [8,]     0.40  2           2           3
 #>  [9,]     0.45  2           2           3
-#> [10,]     0.50  3           2           3
+#> [10,]     0.50  2           2           3
 #> [11,]     0.55  3           2           3
-#> [12,]     0.60  3           2           4
-#> [13,]     0.65  3           3           4
+#> [12,]     0.60  3           2           3
+#> [13,]     0.65  3           2           4
 #> [14,]     0.70  3           3           4
 #> [15,]     0.75  4           3           4
 #> [16,]     0.80  4           3           5
@@ -147,7 +147,7 @@ If regressors are provided in the argument x, then the conditional distribution 
 Let's consider a second artificial example:
 
 ``` r
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 treatment <- c(rep(0,1000), rep(1,1000))
 reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
@@ -189,8 +189,8 @@ We can illustrate this third type of applications with the same data. We simply 
 
 ``` r
 results4 <- discreteQ(outcome, treatment, cbind(1, reg), decomposition=TRUE)
-#> [1]        407  138549605 -519769706 1084763616 -378399625 -606941198
-#> [7]  832006851
+#> [1]         407  1932491451   553371328  -109713471 -1477418354   319693239
+#> [7]   465455756
 plot(results4)
 ```
 
@@ -217,7 +217,7 @@ Second, as shown in Chernozhukov et al. (2019), when the outcome is discrete we 
 We know illustrate the use of the `discreteQ` functions with a continuous outcome:
 
 ``` r
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 outcome <- rnorm(500, 3)
 results5 <- discreteQ(outcome, ys = Inf)
 plot(results5, support = "continuous")
@@ -249,21 +249,21 @@ Parallel computing
 The computing time may be long if the numbers of observations, regressors, points in the support of the dependent variable, and bootstrap replications are large. For this reason, parallel processing has been implemented by `discreteQ()`. The user must first create a cluster object with the desired number of parallel processes. This object is then pass to `discreteQ()`via the argument `cl`. Here is a comparison of the computing time for a simple example:
 
 ``` r
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 treatment <- c(rep(0,1000), rep(1,1000))
 reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
 #Without parallel computing
-set.seed(42, kind = "L'Ecuyer-CMRG")
+set.seed(42)
 system.time(results6 <- discreteQ(outcome, treatment, reg))
 #>    user  system elapsed 
-#>   17.32    0.00   17.39
+#>   16.77    0.01   16.97
 my_cl <- parallel::makePSOCKcluster(2)
 #With parallel computing
-set.seed(42, kind = "L'Ecuyer-CMRG")
+set.seed(42)
 system.time(results7 <- discreteQ(outcome, treatment, reg, cl = my_cl ))
 #>    user  system elapsed 
-#>    0.08    0.06    9.69
+#>    0.11    0.03    8.88
 ```
 
 The results are replicable simply by setting the seed with `set.seed()`. If this is done, exactly the same results will be obtained with or without parallel computing. In both cases, a sequence of random streams (a seed for each bootstrap replication) is generated with `rngtools:RNGseq`. This sequence is returne by `discreteQ()` if `return.seeds = TRUE`. Such a sequence can be passed to the argument `list_of_seeds` of `discreteQ()`, which permits replicating particular bootstrap draws.

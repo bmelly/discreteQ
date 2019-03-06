@@ -1,10 +1,10 @@
 context("Univariate")
 library(discreteQ)
 
-set.seed(41, kind = "L'Ecuyer-CMRG")
+set.seed(41)
 outcome <- rpois(100, 3)
 quants <- runif(10)
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results1 <- discreteQ(outcome, bsrep = 10)
 
 test_that(
@@ -30,7 +30,7 @@ test_that(
   }
 )
 
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results2 <- discreteQ(outcome, bsrep = 10, return.boot = TRUE, return.seeds = TRUE)
 test_that(
   "Check the bootstrap for univariate",{
@@ -41,9 +41,9 @@ test_that(
   }
 )
 
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 list_of_seeds <- rngtools::RNGseq(10, simplify=FALSE)
-set.seed(999, kind = "L'Ecuyer-CMRG")
+set.seed(999)
 results3 <- discreteQ(outcome, bsrep=10, list_of_seeds = list_of_seeds)
 results4 <- discreteQ(outcome, bsrep=10, list_of_seeds = results2$seeds)
 
@@ -57,7 +57,7 @@ test_that(
 
 ncores <- min(2,parallel::detectCores())
 cl <- parallel::makePSOCKcluster(ncores)
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results5 <- discreteQ(outcome, bsrep=10, cl=cl)
 results6 <- discreteQ(outcome, bsrep=10, list_of_seeds = list_of_seeds)
 
@@ -70,9 +70,9 @@ test_that(
 )
 
 cluster <- rep(1:20, each=5)
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results7 <- discreteQ(outcome, bsrep=10, cluster = cluster)
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results8 <- discreteQ(outcome, bsrep=10, cluster = cluster, cl=cl)
 results9 <- discreteQ(outcome, bsrep=10, list_of_seeds = list_of_seeds, cluster=cluster, cl=cl)
 parallel::stopCluster(cl)
@@ -88,9 +88,9 @@ test_that(
 )
 
 weights <- c(rep(0,50), rep(2,50))
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results10 <- discreteQ(outcome, w = weights, bsrep = 10)
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results11 <- discreteQ(outcome[51:100], bsrep=10)
 test_that(
   "Weights for univariate",{
@@ -98,7 +98,7 @@ test_that(
   }
 )
 
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results12 <- discreteQ(outcome, alpha = 0.1, bsrep = 10)
 results13 <- discreteQ(outcome, alpha=0.1, old.res = results2, bsrep=10)
 test_that(
@@ -113,7 +113,7 @@ test_that(
     expect_equal(results12$ub.F(0:10),results13$ub.F(0:10))
   })
 
-set.seed(1234, kind = "L'Ecuyer-CMRG")
+set.seed(1234)
 results14 <- discreteQ(outcome, bsrep = 10, q.range = c(0.2,0.8))
 test_that(
   "Check that q.range is correct", {

@@ -164,7 +164,7 @@
 #' @examples
 #' ##Example 1: univariate quantile function
 #' #Generate the data
-#' set.seed(1234, kind = "L'Ecuyer-CMRG")
+#' set.seed(1234)
 #' outcome <- rpois(100, 3)
 #' #Estimate the functions and the confidence bands
 #' results1 <- discreteQ(outcome)
@@ -175,7 +175,7 @@
 #'
 #' ##Example 2: quantile treatment effect function (QTE)
 #' #Generate the data
-#' set.seed(1234, kind = "L'Ecuyer-CMRG")
+#' set.seed(1234)
 #' treatment <- c(rep(0,100), rep(1,100))
 #' reg <- rbinom(200, 1, 0.4 + treatment*0.2)
 #' outcome <- rpois(200, lambda = 1+reg)
@@ -192,7 +192,7 @@
 #'
 #' ##Example 3: decomposition
 #' #Generate the data
-#' set.seed(1234, kind = "L'Ecuyer-CMRG")
+#' set.seed(1234)
 #' group <- c(rep(0,100), rep(1,100))
 #' reg <- rbinom(200, 1, 0.2 + group*0.6)
 #' outcome <- rpois(200, lambda = exp(-3+4*reg))
@@ -234,6 +234,9 @@ discreteQ <-
            return.boot = FALSE,
            list_of_seeds = NULL,
            return.seeds = FALSE) {
+    rng_old <- RNGkind()
+    on.exit(RNGkind(rng_old[1], rng_old[2]), add = TRUE)
+    RNGkind(kind = "L'Ecuyer-CMRG")
     if(!is.null(d)){
       if(length(d)!=length(y)) stop("y and d must have the same length.")
     }
