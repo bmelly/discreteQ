@@ -20,10 +20,11 @@ install.packages("devtools")
 devtools::install_github("bmelly/discreteQ")
 ```
 
-After installing and loading the package, we recommend reading the help file for the command discreteQ:
+After installing and loading the package, we recommend reading the vignette and the help file for the command discreteQ:
 
 ``` r
 library(discreteQ)
+vignette("discreteQ")
 ?discreteQ
 ```
 
@@ -140,9 +141,9 @@ By default the increment between quantile indexes is 0.05 but this can be modifi
 Example 2: confidence bands for quantile treatment effect functions
 -------------------------------------------------------------------
 
-If a treatment variable is provided in the argument d but the argument decomposition is set to FALSE, then `discreteQ()` provides uniform bands that cover jointly the quantile functions of the treated and control outcomes and the quantile treatment effect functions.
+If a treatment variable is provided in the argument `d` but the argument `decomposition` is set to `FALSE`, then `discreteQ()` provides uniform bands that cover jointly the quantile functions of the treated and control outcomes and the quantile treatment effect functions.
 
-If regressors are provided in the argument x, then the conditional distribution function of the outcome given the covariates is estimated separately in the control and treated group using distribution regression. In a second step, `discreteQ()` estimates the counterfactual distributions that we would observe if all observations were not treated or treated by integrating the estimated conditional distributions over the distribution of the regressors in the whole sample. The estimated quantile treatment effect function has a causal interpretation if the treatment is randomized conditionally on the control variable (or can be treated as if it were).
+If regressors are provided in the argument `x`, then the conditional distribution function of the outcome given the covariates is estimated separately in the control and treated group using distribution regression. In a second step, `discreteQ()` estimates the counterfactual distributions that we would observe if all observations were not treated or treated by integrating the estimated conditional distributions over the distribution of the regressors in the whole sample. The estimated quantile treatment effect function has a causal interpretation if the treatment is randomized conditionally on the control variable (or can be treated as if it were).
 
 Let's consider a second artificial example:
 
@@ -171,7 +172,7 @@ plot(results3)
 
 <img src="man/figures/README-example7-1.png" width="100%" /> The bands now include 0 at all quantile indexes such that we can no longer reject the null hypothesis that the treatment has no effect at all.
 
-The plot function can also be used to visualize the estimated counterfactual distributions that we would observed if nobody was treated (Q0) and that we would observe if everybody was treated (Q1). With the argument add=TRUE it is possible to add the results for the function Q1. With the argument shift it is possible to shift the bands to avoid that they overlap.
+The plot function can also be used to visualize the estimated counterfactual distributions that we would observed if nobody was treated (Q0) and that we would observe if everybody was treated (Q1). With the argument `add=TRUE` it is possible to add the results for the function Q1. With the argument `shift` it is possible to shift the bands to avoid that they overlap.
 
 ``` r
 plot(results3, which="Q0")
@@ -183,9 +184,9 @@ plot(results3, which="Q1", add=TRUE, shift=0.2, col.l="dark green", col.b="light
 Example 3: confidence bands for decompositions of observed differences
 ----------------------------------------------------------------------
 
-Finally, `discreteQ()` can be used to decompose the difference between the observed quantile function of the outcome for the treated group and the observed quantile function of the outcome for the control group. In order to perform this decomposition `discreteQ()` estimates the counterfactual distribution that would prevail for control observations had they had the distribution of regressors of treated observations. In other words, we integrate the conditional distribution of the control outcome given the regressors over the unconditional distribution of the regressors for the treated observations. Distribution regression is used to estimated the conditional distribution and the link function can be specified with the argument method.
+Finally, `discreteQ()` can be used to decompose the difference between the observed quantile function of the outcome for the treated group and the observed quantile function of the outcome for the control group. In order to perform this decomposition `discreteQ()` estimates the counterfactual distribution that would prevail for control observations had they had the distribution of regressors of treated observations. In other words, we integrate the conditional distribution of the control outcome given the regressors over the unconditional distribution of the regressors for the treated observations. Distribution regression is used to estimated the conditional distribution and the link function can be specified with the argument `method`.
 
-We can illustrate this third type of applications with the same data. We simply add the argument decomposition=TRUE when we call `discreteQ()`:
+We can illustrate this third type of applications with the same data. We simply add the argument `decomposition=TRUE` when we call `discreteQ()`:
 
 ``` r
 results4 <- discreteQ(outcome, treatment, cbind(1, reg), decomposition=TRUE)
@@ -198,9 +199,11 @@ plot(results4)
 
 In the top-left panel we see both observed unconditional quantile functions as well as the counterfactual quantile function. The top-right panel provides the results for the difference between the observed unconditional distribution (Q1 minus Q0). This difference is decomposed into two components that appear in the bottom panels.
 
-The bottom-left panel provides the difference between the treated and the counterfactual quantile functions (Q1 minus Qc). These two quantile functions are obtain by integrating the same conditional distribution of the outcome over different distribution of the covariates (for Qc we use the distribution of the regressors in the control group and for Q1 we use the distribution of the covariates for the treated group). This difference is known under a variety of names in the literature: the composition effect, the explained component, the justified component, the effect of characteristics.
+The bottom-left panel provides the difference between the treated and the counterfactual quantile functions (Q1 minus Qc). These two quantile functions are obtained by integrating the same conditional distribution of the outcome over different distribution of the covariates (for Qc we use the distribution of the regressors in the control group and for Q1 we use the distribution of the covariates for the treated group). This difference is known under a variety of names in the literature: the composition effect, the explained component, the justified component, the effect of characteristics.
 
-The bottom-right panel provides the results for the difference between the counterfactual and the control quantile functions (Qc minus Q0). These two quantile functions are obtained by integrating different conditional distribution function over the same distribution of the regressors. Thus, this part of the difference cannot be explained by the different characteristics of the groups. It is therefore called the unexplained difference. In discrimination studies, this component is often interpreted as the discrimination between the group (because it cannot be explained but this interpretation may be incorrect if important regressors are omitted or not observable). If we can assume that the treatment is as good as conditionally randomized, then this component has a causal interpretation as the quantile treatment effect on the treated. Thus, in this case, `discreteQ()` can be used to estimate the quantile treatment effects for the whole population with the argument decomposition = FALSE and it can be used to estimate the quantile treatment effects on the treated with the argument decomposition = TRUE.
+The bottom-right panel provides the results for the difference between the counterfactual and the control quantile functions (Qc minus Q0). These two quantile functions are obtained by integrating different conditional distribution function over the same distribution of the regressors. Thus, this part of the difference cannot be explained by the different characteristics of the groups. It is therefore called the unexplained difference. In discrimination studies, this component is often interpreted as the discrimination between the group (because it cannot be explained but this interpretation may be incorrect if important regressors are omitted or not observable).
+
+If we can assume that the treatment is as good as conditionally randomized, then this component has a causal interpretation as the quantile treatment effect on the untreated. Section 2.3 in (Chernozhukov, Fernández-Val, and Melly 2013) provides formal conditions for such an interpretation to be valid. Thus, when these assumptions are satisfied, `discreteQ()` can be used to estimate the quantile treatment effects for the whole population with the argument `decomposition = FALSE` and it can be used to estimate the quantile treatment effects on the untreated with the argument `decomposition = TRUE`. Finally, the quantile treatment effect on the treated (with a reverse sign) can be obtained with the argument `decomposition = TRUE` and `d = 1 - treatment`.
 
 Advanced examples
 =================
@@ -257,13 +260,13 @@ outcome <- rpois(2000, lambda = 2+4*reg)
 set.seed(42)
 system.time(results6 <- discreteQ(outcome, treatment, reg))
 #>    user  system elapsed 
-#>   16.77    0.01   16.97
+#>   16.75    0.00   16.75
 my_cl <- parallel::makePSOCKcluster(2)
 #With parallel computing
 set.seed(42)
 system.time(results7 <- discreteQ(outcome, treatment, reg, cl = my_cl ))
 #>    user  system elapsed 
-#>    0.11    0.03    8.88
+#>    0.12    0.04    8.78
 ```
 
 The results are replicable simply by setting the seed with `set.seed()`. If this is done, exactly the same results will be obtained with or without parallel computing. In both cases, a sequence of random streams (a seed for each bootstrap replication) is generated with `rngtools:RNGseq`. This sequence is returne by `discreteQ()` if `return.seeds = TRUE`. Such a sequence can be passed to the argument `list_of_seeds` of `discreteQ()`, which permits replicating particular bootstrap draws.
@@ -297,5 +300,7 @@ References
 Chen, Mingli, Victor Chernozhukov, Iván Fernández-Val, and Blaise Melly. 2017. “Counterfactual: An R Package for Counterfactual Analysis.” *The R Journal* 9 (1): 370–84. doi:[10.32614/RJ-2017-033](https://doi.org/10.32614/RJ-2017-033).
 
 Chernozhukov, Victor, Ivan Fernandez-Val, Blaise Melly, and Kaspar Wüthrich. 2019. “Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes.” *arXiv Preprint arXiv:1608.05142*.
+
+Chernozhukov, Victor, Iván Fernández-Val, and Blaise Melly. 2013. “Inference on Counterfactual Distributions.” *Econometrica* 81 (6). Wiley Online Library: 2205–68.
 
 [1] For continuous outcomes we nevertheless recommend using the package `Counterfactual`, which is available from CRAN (Chen et al. 2017). Its functions offers additional options and sharper inference for quantile effects when the outcome is continuous.
