@@ -30,7 +30,7 @@ function in this range. Default is c(0.05,0.95).}
 
 \item{method}{link function for the distribution regression model. Possible
 values: "logit" (the default), "probit", "cloglog", "lpm" (linear
-probability model, i.e. OLS estimation of binary regressions), "cauchit", "drp" (incomplete gamma link function suggested in Chernozhukov, Fernandez-Val, Wutrich and Melly (2019). The maximum likelihood estimator of the fully parametric Poisson regression model is used if \code{method = "poisson"}.
+probability model, i.e. OLS estimation of binary regressions), "cauchit", "drp" (incomplete gamma link function suggested in Chernozhukov, Fernandez-Val, Melly and Wutrich (2019). The maximum likelihood estimator of the fully parametric Poisson regression model is used if \code{method = "poisson"}.
 This argument is relevant only if there are regressors in \code{x}.}
 
 \item{bsrep}{number of bootstrap replications. Default: 200.}
@@ -165,7 +165,7 @@ function if this argument is set to TRUE.}
 The function \code{discreteQ} provides uniform confidence bands for the unconditional
 quantile function, the quantile treatment effect function or the
 decomposition of the observed difference between the quantile function of an
-outcome for two groups. This function implements the algorithms suggested in Chernozhukov, Fernandez-Val, Wuthrich and Melly (2019).
+outcome for two groups. This function implements the algorithms suggested in Chernozhukov, Fernandez-Val, Melly and Wuthrich (2019).
 See also the vignette available with \code{vignette("discreteQ", package="discreteQ")}.
 }
 \details{
@@ -182,7 +182,7 @@ cover the quantile and distribution functions of the treated and control outcome
 quantile treatment effect function (the difference between both quantile functions).
 \item Third, if a treatment variable is
 specified in the argument \code{d} and \code{decomposition=TRUE}, then the command provides
-uniforme bands that cover both distribution functions, both quantile functions as well as the
+uniform bands that cover both distribution functions, both quantile functions as well as the
 decomposition of their difference into an explained (by the regressors
 \code{x}) and unexplained component.
 }
@@ -194,7 +194,7 @@ functions to analyze the results. For further details see the vignette available
 \examples{
 ##Example 1: univariate quantile function
 #Generate the data
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 outcome <- rpois(100, 3)
 #Estimate the functions and the confidence bands
 results1 <- discreteQ(outcome)
@@ -205,7 +205,7 @@ plot(results1)
 
 ##Example 2: quantile treatment effect function (QTE)
 #Generate the data
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 treatment <- c(rep(0,100), rep(1,100))
 reg <- rbinom(200, 1, 0.4 + treatment*0.2)
 outcome <- rpois(200, lambda = 1+reg)
@@ -222,7 +222,7 @@ plot(results2, which="Q1", add=TRUE, shift=0.2, col.l="dark green", col.b="light
 
 ##Example 3: decomposition
 #Generate the data
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 group <- c(rep(0,100), rep(1,100))
 reg <- rbinom(200, 1, 0.2 + group*0.6)
 outcome <- rpois(200, lambda = exp(-3+4*reg))

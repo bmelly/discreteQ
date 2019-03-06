@@ -38,12 +38,12 @@ but it is also possible to set the argument \code{which} to one of the
 following values: "Q0", "Q1", "Qc", "observed", "composition", "unexplained".
 }
 \examples{
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 outcome <- rpois(100, 3)
 results1 <- discreteQ(outcome)
 summary(results1)
 
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 treatment <- c(rep(0,100), rep(1,100))
 reg <- rbinom(200, 1, 0.4+treatment*0.2)
 outcome <- rpois(200, lambda = 2+4*reg)
@@ -51,7 +51,7 @@ results2 <- discreteQ(outcome, treatment, cbind(1, reg))
 summary(results2)
 summary(results2, which="Q0")
 
-set.seed(1234)
+set.seed(1234, kind = "L'Ecuyer-CMRG")
 group <- c(rep(0,100), rep(1,100))
 reg <- rbinom(200, 1, 0.4+group*0.2)
 outcome <- rpois(200, lambda = exp(-2+4*reg))

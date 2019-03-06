@@ -23,12 +23,12 @@
 #' @param ... additional optional arguments.
 #' @return A matrix with the same number of rows as specified with the argument taus and 4 columns. The first column contains the quantile indexes, the second column the point estimates, the third and the fourth column the uniform bands evaluated at this quantile index.
 #' @examples
-#' set.seed(1234)
+#' set.seed(1234, kind = "L'Ecuyer-CMRG")
 #' outcome <- rpois(100, 3)
 #' results1 <- discreteQ(outcome)
 #' summary(results1)
 #'
-#' set.seed(1234)
+#' set.seed(1234, kind = "L'Ecuyer-CMRG")
 #' treatment <- c(rep(0,100), rep(1,100))
 #' reg <- rbinom(200, 1, 0.4+treatment*0.2)
 #' outcome <- rpois(200, lambda = 2+4*reg)
@@ -36,7 +36,7 @@
 #' summary(results2)
 #' summary(results2, which="Q0")
 #'
-#' set.seed(1234)
+#' set.seed(1234, kind = "L'Ecuyer-CMRG")
 #' group <- c(rep(0,100), rep(1,100))
 #' reg <- rbinom(200, 1, 0.4+group*0.2)
 #' outcome <- rpois(200, lambda = exp(-2+4*reg))
