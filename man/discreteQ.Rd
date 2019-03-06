@@ -165,7 +165,7 @@ function if this argument is set to TRUE.}
 The function \code{discreteQ} provides uniform confidence bands for the unconditional
 quantile function, the quantile treatment effect function or the
 decomposition of the observed difference between the quantile function of an
-outcome for two groups. This function implements the algorithms suggested in Chernozhukov, Fernandez-Val, Melly and Wuthrich (2019).
+outcome for two groups. This function implements the algorithms suggested in Chernozhukov, Fernandez-Val, Melly and Wüthrich (2019).
 See also the vignette available with \code{vignette("discreteQ", package="discreteQ")}.
 }
 \details{
