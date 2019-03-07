@@ -5,7 +5,7 @@ The discreteQ repository
 
 This repository contains two different parts:
 
-1.  In the folder repository you can find the datasets and the R codes that generated all the results in the paper in the paper "Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val, Blaise Melly and Kaspar Wüthrich. This paper is available at <https://arxiv.org/abs/1608.05142>. The first empirical example uses data from the Oregon health experiment. The data are available at <http://www.nber.org/oregon/4.data.html>. The second empirical example is a decomposition of the black-white testscore gap. The data are available at dx.doi.org/10.1257/aer.103.2.981. The codes that produce the simulations results in the supplementary appendix are also provided.
+1.  In the folder repository you can find the datasets and the R codes that generated all the results in the paper "Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes" written by Victor Chernozhukov, Ivan Fernandez-Val, Blaise Melly and Kaspar Wüthrich. This paper is available at <https://arxiv.org/abs/1608.05142>. The first empirical example uses data from the Oregon health experiment. The data are available at <http://www.nber.org/oregon/4.data.html>. The second empirical example is a decomposition of the black-white testscore gap. The data are available at <http://dx.doi.org/10.1257/aer.103.2.981>. The codes that produce the simulations results in the supplementary appendix are also provided.
 
 2.  The R package that contain generic functions that allows researchers to easily apply the methods suggested in the paper "Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes" written by V. Chernozhukov, I. Fernandez-Val, B. Melly, and K. Wüthrich. This paper is available at <https://arxiv.org/abs/1608.05142>. The goal of discreteQ is to perform inference on quantile functions, quantile treatment effect functions and decompositions of differences between quantile functions for possibly discrete outcomes.
 
@@ -154,14 +154,14 @@ reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
 ```
 
-We have generated 1000 control observations and 1000 treated observations. The binary regressor reg has a higher mean in treated group, which implies that the outcome has also a higher mean in the treated group. In fact, we see that the unconditional distribution of the outcome in the treated group is stochastically dominated by the unconditional distribution of the outcome in the control group:
+We have generated 1000 control observations and 1000 treated observations. The binary regressor `reg` has a higher mean in treated group, which implies that the outcome has also a higher mean in the treated group. In fact, the unconditional distribution of the outcome in the treated group is stochastically dominated by the unconditional distribution of the outcome in the control group:
 
 ``` r
 results2 <- discreteQ(outcome, treatment)
 plot(results2, main="Difference between the unconditional quantile functions")
 ```
 
-<img src="man/figures/README-example6-1.png" width="100%" /> We see that the quantile differences are uniformly weakly positive. In addition, the uniform bands exclude 0 at many quantile indexes. Since these are uniform bands that cover the whole functions with probability 1-alpha (which is 0.95 by default), we can reject the null hypothesis that treated and control unconditional distribution are identical.
+<img src="man/figures/README-example6-1.png" width="100%" /> The plotted uniform band covers the whole quantile effect function with probability 1-alpha (which is 0.95 by default); this property allows us to test several functional hypotheses. For instance, we can reject the null hypothesis that the treated and control unconditional distributions are identical because the uniform bands exclude 0 at some quantile indices. We can also reject the null hypothesis that the quantile difference is the constant because there is no value that is included in the band at all quantile indices. On the other hand, we are naturally unable to reject the null hypothesis that the quantile difference is weakly positive over the whole considered quantile range.
 
 However, conditional on the regressors, there are no difference between the control and treated outcomes. The difference between the unconditional quantile functions should, therefore, not be interpreted as a causal effect of the treatment. This is why we now estimate the quantile treatment effect by including the regressors in the estimation:
 
@@ -195,7 +195,7 @@ results4 <- discreteQ(outcome, treatment, cbind(1, reg), decomposition=TRUE)
 plot(results4)
 ```
 
-<img src="man/figures/README-example9-1.png" width="100%" /> By default, plot show all quantile functions in the first panel and the three elements of the decomposition in the remaining panels. Note that the uniform bands cover simultaneously all the functions that appear in the four panels.
+<img src="man/figures/README-example9-1.png" width="100%" /> By default, `plot` shows all quantile functions in the first panel and the three elements of the decomposition in the remaining panels. Note that the uniform bands cover simultaneously all the functions that appear in the four panels.
 
 In the top-left panel we see both observed unconditional quantile functions as well as the counterfactual quantile function. The top-right panel provides the results for the difference between the observed unconditional distribution (Q1 minus Q0). This difference is decomposed into two components that appear in the bottom panels.
 
@@ -203,7 +203,7 @@ The bottom-left panel provides the difference between the treated and the counte
 
 The bottom-right panel provides the results for the difference between the counterfactual and the control quantile functions (Qc minus Q0). These two quantile functions are obtained by integrating different conditional distribution function over the same distribution of the regressors. Thus, this part of the difference cannot be explained by the different characteristics of the groups. It is therefore called the unexplained difference. In discrimination studies, this component is often interpreted as the discrimination between the group (because it cannot be explained but this interpretation may be incorrect if important regressors are omitted or not observable).
 
-If we can assume that the treatment is as good as conditionally randomized, then this component has a causal interpretation as the quantile treatment effect on the untreated. Section 2.3 in (Chernozhukov, Fernández-Val, and Melly 2013) provides formal conditions for such an interpretation to be valid. Thus, when these assumptions are satisfied, `discreteQ()` can be used to estimate the quantile treatment effects for the whole population with the argument `decomposition = FALSE` and it can be used to estimate the quantile treatment effects on the untreated with the argument `decomposition = TRUE`. Finally, the quantile treatment effect on the treated (with a reverse sign) can be obtained with the argument `decomposition = TRUE` and `d = 1 - treatment`.
+If we can assume that the treatment is as good as conditionally randomized, then this component has a causal interpretation as the quantile treatment effect on the untreated. Section 2.3 in Chernozhukov, Fernández-Val, and Melly (2013) provides formal conditions for such an interpretation to be valid. Thus, when these assumptions are satisfied, `discreteQ()` can be used to estimate the quantile treatment effects for the whole population with the argument `decomposition = FALSE` and it can be used to estimate the quantile treatment effects on the untreated with the argument `decomposition = TRUE`. Finally, the quantile treatment effect on the treated (with a reverse sign) can be obtained with the argument `decomposition = TRUE` and `d = 1 - treatment`.
 
 Advanced examples
 =================
@@ -235,7 +235,7 @@ In the presence of covariates, the conditional distribution function of the outc
 *F*<sub>*Y* ∣ *X*</sub>(*y*∣*x*) = *P*(*Y* ≤ *y* ∣ *X* = *x*)=*Λ*<sub>*y*</sub>(*x*<sup>′</sup>*β*(*y*))
  where *Λ*<sub>*y*</sub>(⋅) is a known link function which is allowed to change with the threshold level *y* and *β*(*y*) is an unknown vector of parameters.
 
-By default, `discreteQ()` uses the logistic link function $\\Lambda\\left(x'\\beta\\left(y\\right)\\right)=\\frac{1}{1+e^{-x'\\beta(y)}}$. Alternatively, the Gaussian link function is used if `method = "probit"`, the complementary log-log link function (which nests as a special case the Cox proportional hazard model) if `method = "cloglog"`, the Cauchy link function if `method = "cauchit"`, the Poisson link function suggested by Chernozhukov et al. (2019) (which nests as a special case the Poisson regression model) if `method = "drp"`, the identity link function (which consists in estimating an OLS regression for each threshold, also called the linear probability model) if `method = "lpm"`.
+By default, `discreteQ()` uses the logistic link function *Λ*(*x*′*β*(*y*)) = 1/(1 + *e*<sup>−*x*′*β*(*y*)</sup>). Alternatively, the Gaussian link function is used if `method = "probit"`, the complementary log-log link function (which nests as a special case the Cox proportional hazard model) if `method = "cloglog"`, the Cauchy link function if `method = "cauchit"`, the Poisson link function suggested by Chernozhukov et al. (2019) (which nests as a special case the Poisson regression model) if `method = "drp"`, the identity link function (which consists in estimating an OLS regression for each threshold, also called the linear probability model) if `method = "lpm"`.
 
 The fully parametric Poisson regression model is also implemented by `discreteQ()` when `method = "poisson"`. The difference between the Poisson regression model and the distribution regression models discussed above is that the Poisson regression model imposes the same index *x*′*β* at all thresholds. This is a strong homogeneity assumption which may be rejected by the data even when there are no covariates or a fully saturated set of covariates. On the other hand, the distribution regression model allows for a different vector of coefficients *β*(*y*) at each threshold. This model does not impose any parametric assumption on the data when we have a fully saturated set of covariates. The distribution regression with the Poisson link function (implemented when `method = "drp"`) strictly nests the Poisson regression model (implemented when `method = "poisson"`). If these two methods give statistically different results then we must conclude that the Poisson regression model is rejected by the data.
 
@@ -260,13 +260,13 @@ outcome <- rpois(2000, lambda = 2+4*reg)
 set.seed(42)
 system.time(results6 <- discreteQ(outcome, treatment, reg))
 #>    user  system elapsed 
-#>   16.75    0.00   16.75
+#>   16.82    0.03   16.86
 my_cl <- parallel::makePSOCKcluster(2)
 #With parallel computing
 set.seed(42)
 system.time(results7 <- discreteQ(outcome, treatment, reg, cl = my_cl ))
 #>    user  system elapsed 
-#>    0.12    0.04    8.78
+#>    0.13    0.04    9.03
 ```
 
 The results are replicable simply by setting the seed with `set.seed()`. If this is done, exactly the same results will be obtained with or without parallel computing. In both cases, a sequence of random streams (a seed for each bootstrap replication) is generated with `rngtools:RNGseq`. This sequence is returne by `discreteQ()` if `return.seeds = TRUE`. Such a sequence can be passed to the argument `list_of_seeds` of `discreteQ()`, which permits replicating particular bootstrap draws.
@@ -299,7 +299,7 @@ References
 
 Chen, Mingli, Victor Chernozhukov, Iván Fernández-Val, and Blaise Melly. 2017. “Counterfactual: An R Package for Counterfactual Analysis.” *The R Journal* 9 (1): 370–84. doi:[10.32614/RJ-2017-033](https://doi.org/10.32614/RJ-2017-033).
 
-Chernozhukov, Victor, Ivan Fernandez-Val, Blaise Melly, and Kaspar Wüthrich. 2019. “Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes.” *arXiv Preprint arXiv:1608.05142*.
+Chernozhukov, Victor, Ivan Fernandez-Val, Blaise Melly, and Kaspar Wüthrich. 2019. “Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes.” *arXiv Preprint*. <https://arxiv.org/abs/1608.05142>.
 
 Chernozhukov, Victor, Iván Fernández-Val, and Blaise Melly. 2013. “Inference on Counterfactual Distributions.” *Econometrica* 81 (6). Wiley Online Library: 2205–68.
 

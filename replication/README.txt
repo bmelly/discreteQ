@@ -21,5 +21,6 @@ The folder "codes" contains the R codes that replicate all the figures and table
 paper. The path to the folder containing the data and codes must be modified in the
 file "_master.R". This file will then call the other documents, which do not need to be
 modified. Each document produces the figure or table indicated in its name. Note that some
-results take a very long time to be computed (up to 10 days for the second application).
-The approximate computing time are given in _master.R for each figure.
+results take a very long time to be computed (up to 10 days for the second application)
+because the number of observations and covariates is large. The approximate computing
+time are given in _master.R for each figure.

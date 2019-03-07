@@ -2,7 +2,7 @@
 % Please edit documentation in R/discreteQ.R
 \name{discreteQ}
 \alias{discreteQ}
-\title{Uniform inference on quantile and quantile effects for discrete outcomes}
+\title{Uniform inference on quantile and quantile effect functions for discrete outcomes}
 \usage{
 discreteQ(y, d = NULL, x = NULL, w = NULL, decomposition = FALSE,
   q.range = c(0.05, 0.95), method = NULL, bsrep = 200,
@@ -30,7 +30,7 @@ function in this range. Default is c(0.05,0.95).}
 
 \item{method}{link function for the distribution regression model. Possible
 values: "logit" (the default), "probit", "cloglog", "lpm" (linear
-probability model, i.e. OLS estimation of binary regressions), "cauchit", "drp" (incomplete gamma link function suggested in Chernozhukov, Fernandez-Val, Melly and Wutrich (2019). The maximum likelihood estimator of the fully parametric Poisson regression model is used if \code{method = "poisson"}.
+probability model, i.e. OLS estimation of binary regressions), "cauchit", "drp" (incomplete gamma link function suggested in Chernozhukov, Fernandez-Val, Melly and Wütrich (2019). The maximum likelihood estimator of the fully parametric Poisson regression model is used if \code{method = "poisson"}.
 This argument is relevant only if there are regressors in \code{x}.}
 
 \item{bsrep}{number of bootstrap replications. Default: 200.}
@@ -42,8 +42,8 @@ function will be estimated. This argument can be specified either as a
 scalar that will be interpreted as the number of thresholds or as a vector
 that will contain the values of the thresholds. By default, the cdf is
 estimated at all distinct observed values of the outcome in the sample if
-there are less than 100 unique values and at 99 different values if there
-are more than 100 distinct values.}
+there are less than 100 unique values and at the 99 empirical percentiles
+of the outcomes if there are more than 100 distinct values.}
 
 \item{cl}{a cluster object as returned by the function \code{\link[parallel]{makeCluster}}. Parallel computing is
 not used if this argument is not specified.}
@@ -62,7 +62,7 @@ the matrix F.b when this argument is set to TRUE.}
 \item{list_of_seeds}{list of seeds for L'Ecuyer RNG. The length of this list
 must be the same as the value of the argument \code{bsrep}.}
 
-\item{return.seeds}{logical scalar. The list of seeds is return by the
+\item{return.seeds}{logical scalar. The list of seeds is returned by the
 function if this argument is set to TRUE.}
 }
 \value{
@@ -83,7 +83,7 @@ function if this argument is set to TRUE.}
  \item{\code{F}}{The empirical distribution function of the outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{lb.F}}{The lower bound of the uniform confidence band for the unconditional distribution function of the outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{ub.F}}{The upper bound of the uniform confidence band for the unconditional distribution function of the outcome. This is a function of class \code{\link[stats]{stepfun}}.}
- \item{\code{q.range}}{Vector of length 2 that contains the lowest and highest quantile indexes. The uniform bands for the quantile function cover the true quantile function in this quantile range. The uniform bands for the distribution function cover the true function in the range of values of the outcome that are between the quantiles corresponding to thes indexes.}
+ \item{\code{q.range}}{Vector of length 2 that contains the lowest and highest quantile indexes. The uniform bands for the quantile function cover the true quantile function in this quantile range. The uniform bands for the distribution function cover the true function in the range of values of the outcome that are between the quantiles corresponding to these indexes.}
  \item{\code{ys}}{Vector containing the thresholds at which the cumulative distribution has been estimated.}
  \item{\code{bsrep}}{Scalar containing the number of performed bootstrap replications.}
  \item{\code{model}}{String scalar that takes the value "univariate" in this case.}
@@ -98,16 +98,16 @@ function if this argument is set to TRUE.}
  \item{\code{Q0}}{The estimated unconditional quantile function of the control outcome. This is the quantile function of the outcome that we would observe if all observations had \code{d = 0}. If \code{x = NULL}, this is simply the empirical quantile function of the outcome for the subsample with \code{d = 0}. If regressors have been provided in the argument \code{x}, then the estimated conditional distribution of the outcome in the sample with \code{d = 0} is integrated over the distribution of the covariates in the whole sample. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{lb.Q0}}{The lower bound of the uniform confidence band for the unconditional quantile function of the control outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{ub.Q0}}{The upper bound of the uniform confidence band for the unconditional quantile function of the control outcome. This is a function of class \code{\link[stats]{stepfun}}.}
- \item{\code{Q1}}{The estimated unconditional quantile function of the treated outcome. This is the quantile function of the outcome that we would observe if all observations had \code{d = 1}. If \code{x = NULL}, this is simply the empirical quantile function of the outcome for the subsample with \code{d = 1}. If regressors have been provided in the argument \code{x}, then the estimated conditional distribution of the outcome in the sample with \code{d = 0} is integrated over the distribution of the covariates in the whole sample. This is a function of class \code{\link[stats]{stepfun}}.}
+ \item{\code{Q1}}{The estimated unconditional quantile function of the treated outcome. This is the quantile function of the outcome that we would observe if all observations had \code{d = 1}. If \code{x = NULL}, this is simply the empirical quantile function of the outcome for the subsample with \code{d = 1}. If regressors have been provided in the argument \code{x}, then the estimated conditional distribution of the outcome in the sample with \code{d = 1} is integrated over the distribution of the covariates in the whole sample. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{lb.Q1}}{The lower bound of the uniform confidence band for the unconditional quantile function of the treated outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{ub.Q1}}{The upper bound of the uniform confidence band for the unconditional quantile function of the treated outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{QTE}}{The estimated quantile treatment effect function: \code{QTE = Q1 - Q0}. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{lb.QTE}}{The lower bound of the uniform confidence band for the quantile treatment effect.  This is a function of class \code{\link[stats]{stepfun}}.}
- \item{\code{ub.QTE}}{The lower bound of the uniform confidence band for the quantile treatment effect.  This is a function of class \code{\link[stats]{stepfun}}.}
+ \item{\code{ub.QTE}}{The upper bound of the uniform confidence band for the quantile treatment effect.  This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{F0}}{The estimated unconditional distribution function of the control outcome. This is the distribution function of the outcome that we would observe if all observations had \code{d = 0}. If \code{x = NULL}, this is simply the empirical distribution function of the outcome for the subsample with \code{d = 0}. If regressors have been provided in the argument \code{x}, then the estimated conditional distribution of the outcome in the sample with \code{d = 0} is integrated over the distribution of the covariates in the whole sample. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{lb.F0}}{The lower bound of the uniform confidence band for the unconditional distribution function of the control outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{ub.F0}}{The upper bound of the uniform confidence band for the unconditional distribution function of the control outcome. This is a function of class \code{\link[stats]{stepfun}}.}
- \item{\code{F1}}{The estimated unconditional distribution function of the treated outcome. This is the distribution function of the outcome that we would observe if all observations had \code{d = 1}. If \code{x = NULL}, this is simply the empirical distribution function of the outcome for the subsample with \code{d = 1}. If regressors have been provided in the argument \code{x}, then the estimated conditional distribution of the outcome in the sample with \code{d = 0} is integrated over the distribution of the covariates in the whole sample. This is a function of class \code{\link[stats]{stepfun}}.}
+ \item{\code{F1}}{The estimated unconditional distribution function of the treated outcome. This is the distribution function of the outcome that we would observe if all observations had \code{d = 1}. If \code{x = NULL}, this is simply the empirical distribution function of the outcome for the subsample with \code{d = 1}. If regressors have been provided in the argument \code{x}, then the estimated conditional distribution of the outcome in the sample with \code{d = 1} is integrated over the distribution of the covariates in the whole sample. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{lb.F1}}{The lower bound of the uniform confidence band for the unconditional distribution function of the treated outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{ub.F1}}{The upper bound of the uniform confidence band for the unconditional distribution function of the treated outcome. This is a function of class \code{\link[stats]{stepfun}}.}
  \item{\code{q.range}}{Vector of length 2 that contains the lowest and highest quantile indexes. The uniform bands for the quantile functions cover the true quantile function in this quantile range. The uniform bands for the distribution functions cover the true function in the range of values of the outcome that are between the quantiles corresponding to thes indexes.}
@@ -165,7 +165,7 @@ function if this argument is set to TRUE.}
 The function \code{discreteQ} provides uniform confidence bands for the unconditional
 quantile function, the quantile treatment effect function or the
 decomposition of the observed difference between the quantile function of an
-outcome for two groups. This function implements the algorithms suggested in Chernozhukov, Fernandez-Val, Melly and Wüthrich (2019).
+outcome for two groups. This function implements the algorithms suggested in Chernozhukov et al. (2019).
 See also the vignette available with \code{vignette("discreteQ", package="discreteQ")}.
 }
 \details{
@@ -236,4 +236,10 @@ summary(results3, which="observed")
 plot(results3)
 #Plot only the composition component
 plot(results3, which="composition")
+}
+\references{
+Chernozhukov, Victor, Iván Fernández-Val, Blaise Melly, and Kaspar Wüthrich. 2019. “Generic Inference on Quantile and Quantile Effect Functions for Discrete Outcomes.” arXiv Preprint, \url{https://arxiv.org/abs/1608.05142}.
+}
+\seealso{
+For continous outcomes, see also \code{\link[Counterfactual]{counterfactual}} from the package Counterfactual.
 }
