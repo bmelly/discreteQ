@@ -253,6 +253,7 @@ discreteQ <-
     }
     if(!is.null(w)){
       if(length(w)!=length(y)) stop("y and w must have the same length.")
+      w <- w / mean(w)
     }
     if(!is.null(cluster)){
       if(length(cluster)!=length(y)) stop("y and cluster must have the same length.")
@@ -280,7 +281,6 @@ discreteQ <-
       if(is.null(method)) method <- "logit"
       if(!(method %in% c("logit", "probit", "cloglog", "poisson", "lpm", "drp", "cauchit", "log")))
         stop("The selected method has not yet been implemented.")
-print(.Random.seed)
       fit <-
         dq_decomposition(y, x, d, w, q.range, method, bsrep, alpha, ys, cl, cluster, old.res, return.boot, list_of_seeds, return.seeds)
       fit$model <- "decomposition"
