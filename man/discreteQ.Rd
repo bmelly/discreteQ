@@ -4,11 +4,26 @@
 \alias{discreteQ}
 \title{Uniform inference on quantile and quantile effect functions for discrete outcomes}
 \usage{
-discreteQ(y, d = NULL, x = NULL, w = NULL, decomposition = FALSE,
-  q.range = c(0.05, 0.95), method = NULL, bsrep = 200,
-  alpha = 0.05, ys = NULL, cl = NULL, cluster = NULL,
-  old.res = NULL, return.boot = FALSE, list_of_seeds = NULL,
-  return.seeds = FALSE)
+discreteQ(
+  y,
+  d = NULL,
+  x = NULL,
+  w = NULL,
+  decomposition = FALSE,
+  q.range = c(0.05, 0.95),
+  method = NULL,
+  bsrep = 200,
+  alpha = 0.05,
+  ys = NULL,
+  cl = NULL,
+  cluster = NULL,
+  old.res = NULL,
+  return.boot = FALSE,
+  list_of_seeds = NULL,
+  return.seeds = FALSE,
+  estim.glm = fastglm::fastglm,
+  par.estim = NULL
+)
 }
 \arguments{
 \item{y}{outcome (vector of length n).}
@@ -64,6 +79,10 @@ must be the same as the value of the argument \code{bsrep}.}
 
 \item{return.seeds}{logical scalar. The list of seeds is returned by the
 function if this argument is set to TRUE.}
+
+\item{estim.glm}{function used to estimate the binary regressions if \code{method} is "logit", "probit", "cloglog" or "cauchit". The default is the function fastglm() from the package fastglm. Tested alternatives: glm.fit, glm2::glm.fit2, speedglm::speedglm.wfit.}
+
+\item{par.estim}{arguments to be passed to the function selected by \code{estim.glm}. For instance, the arguments \code{method}, \code{tol} and \code{maxit} of \code{fastglm} can be set.}
 }
 \value{
 \code{discreteQ} returns an object of \code{\link{class}} "\code{discreteQ}". There are methods available for plotting ("\code{plot}", see

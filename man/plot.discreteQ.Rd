@@ -5,11 +5,25 @@
 \title{Plotting uniform bands for quantile and quantile effect functions for
 discrete outcomes}
 \usage{
-\method{plot}{discreteQ}(x, ..., which = NULL, xlim = NULL,
-  ylim = NULL, main = NULL, xlab = NULL, ylab = NULL,
-  add = FALSE, col.l = "dark blue", col.b = "light blue",
-  shift = NULL, lty.l = 1, lwd.l = 1, lty.b = 1, lwd.b = 5,
-  support = NULL)
+\method{plot}{discreteQ}(
+  x,
+  ...,
+  which = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  main = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  add = FALSE,
+  col.l = "dark blue",
+  col.b = "light blue",
+  shift = NULL,
+  lty.l = 1,
+  lwd.l = 1,
+  lty.b = 1,
+  lwd.b = 5,
+  support = NULL
+)
 }
 \arguments{
 \item{x}{an object produced by \code{discreteQ}.}

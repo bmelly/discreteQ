@@ -1,7 +1,7 @@
 Package: discreteQ
 Type: Package
 Title: Inference on quantile and quantile effect functions for discrete outcomes
-Version: 0.4.2
+Version: 0.4.3
 Authors@R: c(person("Blaise", "Melly", role = c("aut", "cre"),
                      email = "blaise.melly@vwi.unibe"),
               person("Victor", "Chernozhukov", role = "aut"),
@@ -22,10 +22,11 @@ Imports:
     parallel,
     plyr,
     rngtools,
-    stats
-RoxygenNote: 6.1.1
+    stats,
+    fastglm
+RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     rmarkdown,
     testthat
-VignetteBuilder: knitr
+VignetteBuilder: rmarkdown

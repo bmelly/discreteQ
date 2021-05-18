@@ -55,11 +55,11 @@ reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
 #Without parallel computing
 set.seed(42)
-system.time(results6 <- discreteQ(outcome, treatment, reg))
+system.time(results6 <- discreteQ(outcome, treatment, cbind(1,reg)))
 my_cl <- parallel::makePSOCKcluster(2)
 #With parallel computing
 set.seed(42)
-system.time(results7 <- discreteQ(outcome, treatment, reg, cl = my_cl ))
+system.time(results7 <- discreteQ(outcome, treatment, cbind(1,reg), cl = my_cl ))
 
 ## ----example12-----------------------------------------------------------
 #Results with and without parallel computing are equal
@@ -67,8 +67,8 @@ all.equal(results6, results7)
 
 ## ----example13-----------------------------------------------------------
 #95% confidence bands (default value)
-results8 <- discreteQ(outcome, treatment, reg, return.boot = TRUE)
+results8 <- discreteQ(outcome, treatment, cbind(1,reg), return.boot = TRUE)
 #90% confidence bands
-results9 <- discreteQ(outcome, treatment, reg, old.res = results8, alpha = 0.1)
+results9 <- discreteQ(outcome, treatment, cbind(1,reg), old.res = results8, alpha = 0.1)
 
 

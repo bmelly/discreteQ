@@ -66,6 +66,8 @@
 #'   must be the same as the value of the argument \code{bsrep}.
 #' @param return.seeds logical scalar. The list of seeds is returned by the
 #'   function if this argument is set to TRUE.
+#' @param estim.glm function used to estimate the binary regressions if \code{method} is "logit", "probit", "cloglog" or "cauchit". The default is the function fastglm() from the package fastglm. Tested alternatives: glm.fit, glm2::glm.fit2, speedglm::speedglm.wfit.
+#' @param par.estim arguments to be passed to the function selected by \code{estim.glm}. For instance, the arguments \code{method}, \code{tol} and \code{maxit} of \code{fastglm} can be set.
 #' @return \code{discreteQ} returns an object of \code{\link{class}} "\code{discreteQ}". There are methods available for plotting ("\code{plot}", see
 #'   \code{\link{plot.discreteQ}}) and summarizing ("\code{summary}", see
 #'   \code{\link{summary.discreteQ}}) "\code{discreteQ}" objects. We recommend
@@ -221,6 +223,7 @@
 #' @importFrom rngtools RNGseed
 #' @importFrom parallel clusterExport
 #' @importFrom doParallel registerDoParallel
+#' @importFrom fastglm fastglm
 
 #' @export
 discreteQ <-
@@ -239,7 +242,9 @@ discreteQ <-
            old.res = NULL,
            return.boot = FALSE,
            list_of_seeds = NULL,
-           return.seeds = FALSE) {
+           return.seeds = FALSE,
+           estim.glm = fastglm::fastglm,
+           par.estim = NULL) {
     rng_old <- RNGkind()
     on.exit(RNGkind(rng_old[1], rng_old[2]), add = TRUE)
     RNGkind(kind = "L'Ecuyer-CMRG")
@@ -253,7 +258,6 @@ discreteQ <-
     }
     if(!is.null(w)){
       if(length(w)!=length(y)) stop("y and w must have the same length.")
-      w <- w / mean(w)
     }
     if(!is.null(cluster)){
       if(length(cluster)!=length(y)) stop("y and cluster must have the same length.")
@@ -273,7 +277,7 @@ discreteQ <-
       if(is.null(method)) method <- "logit"
       if(!(method %in% c("logit", "probit", "cloglog", "poisson", "lpm", "drp", "cauchit", "log")))
         stop("The selected method has not yet been implemented.")
-      fit <- dq_qte(y, d, x, w, q.range, method, bsrep, alpha, ys, cl, cluster, old.res, return.boot, list_of_seeds, return.seeds)
+      fit <- dq_qte(y, d, x, w, q.range, method, bsrep, alpha, ys, cl, cluster, old.res, return.boot, list_of_seeds, return.seeds, estim.glm, par.estim)
       fit$model <- "qte"
     } else {
       if (is.null(x))
@@ -282,7 +286,7 @@ discreteQ <-
       if(!(method %in% c("logit", "probit", "cloglog", "poisson", "lpm", "drp", "cauchit", "log")))
         stop("The selected method has not yet been implemented.")
       fit <-
-        dq_decomposition(y, x, d, w, q.range, method, bsrep, alpha, ys, cl, cluster, old.res, return.boot, list_of_seeds, return.seeds)
+        dq_decomposition(y, x, d, w, q.range, method, bsrep, alpha, ys, cl, cluster, old.res, return.boot, list_of_seeds, return.seeds, estim.glm, par.estim)
       fit$model <- "decomposition"
     }
     fit$method <- method

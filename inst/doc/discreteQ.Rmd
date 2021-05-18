@@ -5,8 +5,8 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{Inference on quantile and quantile effects for discrete outcomes: the discreteQ package}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Inference on quantile and quantile effect functions for discrete outcomes: the discreteQ package}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -150,11 +150,11 @@ reg <- rbinom(2000, 1, 0.4+treatment*0.2)
 outcome <- rpois(2000, lambda = 2+4*reg)
 #Without parallel computing
 set.seed(42)
-system.time(results6 <- discreteQ(outcome, treatment, reg))
+system.time(results6 <- discreteQ(outcome, treatment, cbind(1,reg)))
 my_cl <- parallel::makePSOCKcluster(2)
 #With parallel computing
 set.seed(42)
-system.time(results7 <- discreteQ(outcome, treatment, reg, cl = my_cl ))
+system.time(results7 <- discreteQ(outcome, treatment, cbind(1,reg), cl = my_cl ))
 ```
 
 The results are replicable simply by setting the seed with `set.seed()`. If this is done, exactly the same results will be obtained with or without parallel computing. In both cases, a sequence of random streams (a seed for each bootstrap replication) is generated with `rngtools:RNGseq`. This sequence is returne by `discreteQ()` if `return.seeds = TRUE`. Such a sequence can be passed to the argument `list_of_seeds` of `discreteQ()`, which permits replicating particular bootstrap draws.
@@ -170,9 +170,9 @@ The confidence bands estimated by `discreteQ()` cover the true functions in the 
 
 ```{r example13}
 #95% confidence bands (default value)
-results8 <- discreteQ(outcome, treatment, reg, return.boot = TRUE)
+results8 <- discreteQ(outcome, treatment, cbind(1,reg), return.boot = TRUE)
 #90% confidence bands
-results9 <- discreteQ(outcome, treatment, reg, old.res = results8, alpha = 0.1)
+results9 <- discreteQ(outcome, treatment, cbind(1,reg), old.res = results8, alpha = 0.1)
 
 ```
 

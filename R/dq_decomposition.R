@@ -14,7 +14,9 @@ dq_decomposition <-
            old.res = NULL,
            return.boot = FALSE,
            list_of_seeds = NULL,
-           return.seeds = FALSE) {
+           return.seeds = FALSE,
+           estim.glm = fastglm::fastglm,
+           par.estim = NULL) {
     if (is.null(old.res)) {
       x <- as.matrix(x)
       y0 <- y[g == 0]
@@ -52,19 +54,19 @@ dq_decomposition <-
         } else {
           ys0 <-
             sort(unique(stats::quantile(y[g == 0],
-                                 seq(
-                                   1 / (ys + 1), ys / (ys + 1), 1 / ys
-                                 ),
-                                 type = 1)))
+                                        seq(
+                                          1 / (ys + 1), ys / (ys + 1), 1 / ys
+                                        ),
+                                        type = 1)))
         }
         if (ys > length(yu1)) {
           ys1 <- sort(yu1)
         } else {
           ys1 <- sort(unique(stats::quantile(y[g == 1],
-                                      seq(
-                                        1 / (ys + 1), ys / (ys + 1), 1 / ys
-                                      ),
-                                      type = 1)))
+                                             seq(
+                                               1 / (ys + 1), ys / (ys + 1), 1 / ys
+                                             ),
+                                             type = 1)))
         }
       } else{
         ys0 <- unique(sort(ys[ys %in% yu0]))
@@ -94,7 +96,7 @@ dq_decomposition <-
       } else if (method == "drp") {
         Fc <- uncond_cdfs_drp(ys1, y1, x1, w1, x0, w0, cl)
       } else{
-        Fc <- uncond_cdfs_dr(ys1, y1, x1, w1, x0, w0, method, cl)
+        Fc <- uncond_cdfs_dr(ys1, y1, x1, w1, x0, w0, method, cl, estim.glm, par.estim)
       }
 
       Fc <- sort(Fc)
@@ -117,10 +119,10 @@ dq_decomposition <-
       if (is.null(cl)) {
         F.b <-
           sapply(1:bsrep, function(i)
-            boot_decomp(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster))
+            boot_decomp(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster, estim.glm, par.estim))
       } else{
         i <- NULL
-        F.b <-  foreach::`%dopar%`(foreach::foreach(i = 1:bsrep),{boot_decomp(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster)})
+        F.b <-  foreach::`%dopar%`(foreach::foreach(i = 1:bsrep),{boot_decomp(list_of_seeds[[i]], ys0, ys1, y0, y1, x0, x1, w0, w1, n0, n1, method, cluster, estim.glm, par.estim)})
         F.b <- matrix(unlist(F.b),ncol=bsrep)
       }
     } else {
@@ -268,43 +270,43 @@ dq_decomposition <-
         0
       ), right = TRUE)
 
-      res <-
-        list(
-          observed = observed,
-          lb.observed = lb.observed,
-          ub.observed = ub.observed,
-          composition = composition,
-          lb.composition = lb.composition,
-          ub.composition = ub.composition,
-          unexplained = unexplained,
-          lb.unexplained = lb.unexplained,
-          ub.unexplained = ub.unexplained,
-          Q0 = Q0.func,
-          lb.Q0 = lb.Q0j.func,
-          ub.Q0 = ub.Q0j.func,
-          Q1 = Q1.func,
-          lb.Q1 = lb.Q1j.func,
-          ub.Q1 = ub.Q1j.func,
-          Qc = Qc.func,
-          lb.Qc = lb.Qcj.func,
-          ub.Qc = ub.Qcj.func,
-          F0 = F0.func,
-          F1 = F1.func,
-          Fc = Fc.func,
-          lb.F0 = lb.F0.func,
-          lb.F1 = lb.F1.func,
-          lb.Fc = lb.Fc.func,
-          ub.F0 = ub.F0.func,
-          ub.F1 = ub.F1.func,
-          ub.Fc = ub.Fc.func,
-          ys0 = ys0,
-          ys1 = ys1,
-          q.range = q.range,
-          bsrep = bsrep
+    res <-
+      list(
+        observed = observed,
+        lb.observed = lb.observed,
+        ub.observed = ub.observed,
+        composition = composition,
+        lb.composition = lb.composition,
+        ub.composition = ub.composition,
+        unexplained = unexplained,
+        lb.unexplained = lb.unexplained,
+        ub.unexplained = ub.unexplained,
+        Q0 = Q0.func,
+        lb.Q0 = lb.Q0j.func,
+        ub.Q0 = ub.Q0j.func,
+        Q1 = Q1.func,
+        lb.Q1 = lb.Q1j.func,
+        ub.Q1 = ub.Q1j.func,
+        Qc = Qc.func,
+        lb.Qc = lb.Qcj.func,
+        ub.Qc = ub.Qcj.func,
+        F0 = F0.func,
+        F1 = F1.func,
+        Fc = Fc.func,
+        lb.F0 = lb.F0.func,
+        lb.F1 = lb.F1.func,
+        lb.Fc = lb.Fc.func,
+        ub.F0 = ub.F0.func,
+        ub.F1 = ub.F1.func,
+        ub.Fc = ub.Fc.func,
+        ys0 = ys0,
+        ys1 = ys1,
+        q.range = q.range,
+        bsrep = bsrep
       )
-      if(return.boot) res$F.b <- F.b
-      if(return.seeds) res$seeds <- list_of_seeds
-      res
+    if(return.boot) res$F.b <- F.b
+    if(return.seeds) res$seeds <- list_of_seeds
+    res
   }
 
 #summary
@@ -858,72 +860,6 @@ plot_decomposition_internal <-
     }
   }
 
-uncond_cdfs_dr_int <-
-  function(ys, ye, xe, we, x, w, method) {
-    if (method != "sample") {
-      if (method == "logit" |
-          method == "probit" |
-          method == "cauchit" |
-          method == "cloglog" |
-          method == "log") {
-        suppressWarnings(fit  <-
-                           stats::glm.fit(
-                             xe,
-                             (ye <= ys),
-                             weights = we,
-                             family = stats::binomial(link = method)
-                           )$coef)
-      } else if (method == "lpm") {
-        fit  <- stats::lm.wfit(xe, (ye <= ys), w = we)$coef
-      } else
-        stop("The selected method has not yet been implemented.")
-      F <- x %*% fit
-      if (method == "logit" |
-          method == "probit" |
-          method == "cauchit" | method == "cloglog") {
-        F <- stats::binomial(method)$linkinv(F)
-      }
-      stats::weighted.mean(F, w)
-    } else {
-      stats::weighted.mean((ye <= ys), w = we)
-    }
-  }
-
-uncond_cdfs_dr <- function(ys, ye, xe, we,  x, w, method, cl) {
-  if (is.null(cl)) {
-    sapply(
-      ys,
-      uncond_cdfs_dr_int,
-      ye = ye,
-      xe = xe,
-      we = we,
-      x = x,
-      w = w,
-      method = method
-    )
-  } else{
-    # parSapply(cl, ys, function(level)
-    #   uncond_cdfs_dr_int(
-    #     level,
-    #     ye = ye,
-    #     xe = xe,
-    #     we = we,
-    #     x = x,
-    #     w = w,
-    #     method = method
-    #   ))
-    i <- NULL
-    c(unlist(foreach::`%dopar%`(foreach::foreach(i = 1:length(ys)),{uncond_cdfs_dr_int(ys[i], ye, xe, we, x, w, method)})))
-  }
-}
-
-uncond_cdfs_po <- function(ys, ye, xe, we,  x, w) {
-  fit  <- stats::glm(ye ~ xe - 1, weights = we, family = stats::poisson)$coef
-  lambda <- exp(x %*% fit)
-  sapply(ys, function(l)
-    stats::weighted.mean(stats::ppois(l, lambda = lambda), w))
-}
-
 boot_decomp <-
   function(seed,
            ys0,
@@ -937,7 +873,9 @@ boot_decomp <-
            n0,
            n1,
            method,
-           cluster) {
+           cluster,
+           estim.glm,
+           par.estim) {
     rngtools::RNGseed(seed)
     if (is.null(cluster)) {
       bw0 <- stats::rexp(n0) * w0
@@ -979,60 +917,7 @@ boot_decomp <-
           stats::weighted.mean((y0 <= y), bw0)),
         sapply(ys1, function(y)
           stats::weighted.mean((y1 <= y), bw1)),
-        uncond_cdfs_dr(ys1, y1, x1, bw1, x0, bw0, method, cl = NULL)
+        uncond_cdfs_dr(ys1, y1, x1, bw1, x0, bw0, method, cl = NULL, estim.glm, par.estim)
       )
     }
-  }
-
-
-# Distribution regression with Poisson link
-# Maximum likelihood function
-objective <- function(beta, y, binary, x, w = 1) {
-  lambda <- exp(x %*% beta)
-  prob <- pmin(pmax(stats::ppois(y, lambda), 10 ^ -15), 1 - 10 ^ -15)
-  - sum(w * (binary * log(prob) + (1 - binary) * log(1 - prob)))
-}
-
-uncond_cdfs_drp <- function(ys, ye, xe, we,  x, w, cl) {
-  start <-
-    stats::glm(ye ~ xe - 1, weight = we, family = stats::poisson)$coef
-  if (is.null(cl)) {
-    sapply(
-      ys,
-      uncond_cdfs_drp_int,
-      ye = ye,
-      xe = xe,
-      we = we,
-      x = x,
-      w = w,
-      start = start
-    )
-  } else{
-    # parSapply(cl, ys, function(level)
-    #   uncond_cdfs_drp_int(
-    #     level,
-    #     ye = ye,
-    #     xe = xe,
-    #     we = we,
-    #     x = x,
-    #     w = w,
-    #     start = start
-    #   ))
-    i <- NULL
-    c(unlist(foreach::`%dopar%`(foreach::foreach(i = 1:length(ys)),{uncond_cdfs_drp_int(ys[i], ye, xe, we, x, w, start)})))
-  }
-}
-
-uncond_cdfs_drp_int <-
-  function(ys, ye, xe, we, x, w, start) {
-    fit  <- stats::optim(
-      start,
-      objective,
-      y = ys,
-      binary = (ye <= ys),
-      x = xe,
-      w = we
-    )$par
-    lambda <- exp(x %*% fit)
-    stats::weighted.mean(stats::ppois(ys, lambda = lambda), w)
   }
